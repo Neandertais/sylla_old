@@ -28,7 +28,10 @@ export default class User extends BaseModel {
   public static async hashPassword(user: User) {
     if (user.$dirty.password) {
       user.password = await Hash.make(user.password)
-      console.log(user.password)
+    }
+
+    if (user.$dirty.username) {
+      user.username = user.username.toLowerCase()
     }
   }
 }
