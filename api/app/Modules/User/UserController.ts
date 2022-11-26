@@ -49,7 +49,9 @@ export default class UsersController {
     })
 
     if (avatarImage) {
-      await avatarImage.moveToDisk('./')
+      await avatarImage.moveToDisk('./', {
+        name: `${randomUUID()}.${avatarImage.extname}`,
+      })
 
       auth.user?.merge({ avatarUrl: avatarImage.fileName })
     }
