@@ -49,6 +49,46 @@ export default class CoursesController {
 
     return course
   }
-  public async updateCourse({}: HttpContextContract) {}
+
+  public async updateCourse({ auth, params, request, response }: HttpContextContract) {
+    const courseId = params.id
+
+    const course = await Course.find(courseId)
+
+    if (!course) {
+      return response.status(404).send({ message: 'Resource not found' })
+    }
+
+    if (course.ownerId !== auth.user?.username) {
+      return response.status(401).send({ message: 'Unauthorized' })
+    }
+
+    const updateCourseSchema = schema.create({
+      name: schema.string([rules.minLength(12), rules.maxLength(60)]),
+      description: schema.string([rules.minLength(12), rules.maxLength(200)]),
+      price: schema.number(),
+    })
+
+    const payload = await request.validate({ schema: updateCourseSchema })
+
+    course.merge(payload)
+
+    const thumbnailImage = request.file('thumbnail', {
+      size: '5mb',
+      extnames: ['jpg', 'png', 'webp'],
+    })
+
+    if (thumbnailImage) {
+      await thumbnailImage.moveToDisk('./', {
+        name: `${randomUUID()}.${thumbnailImage.extname}`,
+      })
+
+      course.thumbnailUrl = thumbnailImage.fileName!
+    }
+
+    await course.save()
+
+    return course
+  }
   public async deleteCourse({}: HttpContextContract) {}
 }
