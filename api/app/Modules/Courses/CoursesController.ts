@@ -37,7 +37,18 @@ export default class CoursesController {
       data: courseData.toJSON(),
     })
   }
-  public async findCourse({}: HttpContextContract) {}
+
+  public async findCourse({ params, response }: HttpContextContract) {
+    const courseId = params.id
+
+    const course = await Course.find(courseId)
+
+    if (!course) {
+      return response.status(404).send({ message: 'Resource not found' })
+    }
+
+    return course
+  }
   public async updateCourse({}: HttpContextContract) {}
   public async deleteCourse({}: HttpContextContract) {}
 }
