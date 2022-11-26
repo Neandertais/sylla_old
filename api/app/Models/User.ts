@@ -10,6 +10,9 @@ export default class User extends BaseModel {
   public name: string
 
   @column()
+  public avatarUrl: string
+
+  @column()
   public bio: string
 
   @column()

@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import { file } from '@ioc:Adonis/Core/Helpers'
 import User from 'App/Models/User'
 
 test.group('User edit', () => {
@@ -19,7 +20,13 @@ test.group('User edit', () => {
       bio: 'Programmer Javascript',
     }
 
-    const response = await client.patch('/users/mateus').loginAs(user).json(userInfo)
+    const fakeAvatar = await file.generateJpg('1mb')
+
+    const response = await client
+      .patch('/users/mateus')
+      .loginAs(user)
+      .file('avatar', fakeAvatar.contents, { filename: fakeAvatar.name })
+      .fields(userInfo)
 
     response.assertStatus(200)
     response.assertBodyContains(userInfo)

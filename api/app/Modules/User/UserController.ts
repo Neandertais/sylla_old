@@ -1,4 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { randomUUID } from 'node:crypto'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
 
@@ -40,7 +41,20 @@ export default class UsersController {
       if (user) return response.status(409).send({ errors: [{ title: 'Username in use' }] })
     }
 
-    const user = await auth.user?.merge(payload).save()
+    auth.user?.merge(payload)
+
+    const avatarImage = request.file('avatar', {
+      size: '5mb',
+      extnames: ['jpg', 'png', 'webp'],
+    })
+
+    if (avatarImage) {
+      await avatarImage.moveToDisk('./')
+
+      auth.user?.merge({ avatarUrl: avatarImage.fileName })
+    }
+
+    const user = await auth.user?.save()
 
     return user
   }
