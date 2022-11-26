@@ -1,6 +1,7 @@
 import { test } from '@japa/runner'
 import { file } from '@ioc:Adonis/Core/Helpers'
 import User from 'App/Models/User'
+import Drive from '@ioc:Adonis/Core/Drive'
 
 test.group('User edit', () => {
   test('not edit user if not logged', async ({ client }) => {
@@ -22,11 +23,15 @@ test.group('User edit', () => {
 
     const fakeAvatar = await file.generateJpg('1mb')
 
+    const drive = Drive.fake()
+
     const response = await client
       .patch('/users/mateus')
       .loginAs(user)
       .file('avatar', fakeAvatar.contents, { filename: fakeAvatar.name })
       .fields(userInfo)
+
+    drive.restore('local')
 
     response.assertStatus(200)
     response.assertBodyContains(userInfo)
