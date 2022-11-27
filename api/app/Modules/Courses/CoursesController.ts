@@ -90,5 +90,22 @@ export default class CoursesController {
 
     return course
   }
-  public async deleteCourse({}: HttpContextContract) {}
+
+  public async deleteCourse({ auth, params, response }: HttpContextContract) {
+    const courseId = params.id
+
+    const course = await Course.find(courseId)
+
+    if (!course) {
+      return response.status(404).send({ message: 'Resource not found' })
+    }
+
+    if (course.ownerId !== auth.user?.username) {
+      return response.status(401).send({ message: 'Unauthorized' })
+    }
+
+    await course.delete()
+
+    return { message: 'Course deleted successfully' }
+  }
 }
