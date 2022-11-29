@@ -1,4 +1,11 @@
-import { BaseModel, beforeCreate, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BaseModel,
+  beforeCreate,
+  beforeSave,
+  BelongsTo,
+  belongsTo,
+  column,
+} from '@ioc:Adonis/Lucid/Orm'
 import User from 'App/Models/User'
 import { nanoid } from 'nanoid'
 
@@ -30,5 +37,12 @@ export default class Course extends BaseModel {
   @beforeCreate()
   public static async generateId(course: Course) {
     course.id = nanoid(12)
+  }
+
+  @beforeSave()
+  public static async convertPriceToInteger(course: Course) {
+    if (course.$dirty.price) {
+      course.price = Math.round(course.price)
+    }
   }
 }
