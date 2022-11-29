@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Course from 'App/Models/Course'
+import User from 'App/Models/User'
 import { randomUUID } from 'node:crypto'
 
 export default class CoursesController {
@@ -48,6 +49,19 @@ export default class CoursesController {
     }
 
     return course
+  }
+
+  public async listCoursesByUsername({ params, response }: HttpContextContract) {
+    const username = params.username
+    const user = await User.find(username)
+
+    if (!user) {
+      return response.status(404).send({ message: 'Resource not found' })
+    }
+
+    const courses = await Course.query().where('ownerId', username)
+
+    return courses
   }
 
   public async updateCourse({ auth, params, request, response }: HttpContextContract) {
