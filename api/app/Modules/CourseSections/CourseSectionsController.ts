@@ -40,7 +40,18 @@ export default class CourseSectionsController {
 
     return response.status(201).send(section)
   }
-  public async listSections({}: HttpContextContract) {}
+
+  public async listSections({ params, response }: HttpContextContract) {
+    const course = await Course.find(params.course)
+
+    if (!course) {
+      return response.status(404).send({ message: 'Resource not found' })
+    }
+
+    const sections = await CourseSection.query().where('courseId', course.id)
+
+    return sections
+  }
   public async updateSection({}: HttpContextContract) {}
   public async deleteSection({}: HttpContextContract) {}
 }
