@@ -48,7 +48,7 @@ export default class CourseSectionsController {
       return response.status(404).send({ message: 'Resource not found' })
     }
 
-    const sections = await CourseSection.query().where('courseId', course.id)
+    const sections = await CourseSection.query().where('courseId', course.id).orderBy('position')
 
     return sections
   }
