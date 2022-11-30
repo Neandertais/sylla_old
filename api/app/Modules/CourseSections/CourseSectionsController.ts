@@ -52,6 +52,28 @@ export default class CourseSectionsController {
 
     return sections
   }
-  public async updateSection({}: HttpContextContract) {}
+
+  public async updateSection({ auth, params, request, response }: HttpContextContract) {
+    const course = await Course.find(params.course)
+    const section = await CourseSection.find(params.id)
+
+    if (!section || !course) {
+      return response.status(404).send({ message: 'Resource not found' })
+    }
+
+    if (course?.ownerId !== auth.user?.username) {
+      return response.status(401).send({ message: 'Unauthorized' })
+    }
+
+    const updateSectionSchema = schema.create({
+      name: schema.string([rules.minLength(6), rules.maxLength(40)]),
+    })
+
+    const payload = await request.validate({ schema: updateSectionSchema })
+
+    await section.merge(payload).save()
+
+    return section
+  }
   public async deleteSection({}: HttpContextContract) {}
 }

@@ -5,8 +5,10 @@ Route.group(() => {
     'auth',
   ])
   Route.get('courses/:course/sections', 'CourseSectionsController.listSections')
-  Route.patch('courses/sections/:id', 'CourseSectionsController.updateSection').middleware(['auth'])
-  Route.delete('courses/sections/:id', 'CourseSectionsController.deleteSection').middleware([
+  Route.patch('courses/:course/sections/:id', 'CourseSectionsController.updateSection').middleware([
     'auth',
   ])
+  Route.delete('courses/:course/sections/:id', 'CourseSectionsController.deleteSection').middleware(
+    ['auth']
+  )
 }).namespace('App/Modules/CourseSections')
