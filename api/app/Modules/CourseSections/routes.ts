@@ -11,4 +11,8 @@ Route.group(() => {
   Route.delete('courses/:course/sections/:id', 'CourseSectionsController.deleteSection').middleware(
     ['auth']
   )
+  Route.patch(
+    'courses/:course/sections',
+    'CourseSectionsController.updateListSectionOrder'
+  ).middleware(['auth'])
 }).namespace('App/Modules/CourseSections')
