@@ -75,5 +75,21 @@ export default class CourseSectionsController {
 
     return section
   }
-  public async deleteSection({}: HttpContextContract) {}
+
+  public async deleteSection({ auth, params, response }: HttpContextContract) {
+    const course = await Course.find(params.course)
+    const section = await CourseSection.find(params.id)
+
+    if (!section || !course) {
+      return response.status(404).send({ message: 'Resource not found' })
+    }
+
+    if (course?.ownerId !== auth.user?.username) {
+      return response.status(401).send({ message: 'Unauthorized' })
+    }
+
+    await section.delete()
+
+    return { message: 'Resource deleted successfully' }
+  }
 }
