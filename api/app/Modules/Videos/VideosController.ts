@@ -54,4 +54,29 @@ export default class VideosController {
 
     return response.status(201).send(video)
   }
+
+  public async findVideo({ auth, params, response }: HttpContextContract) {
+    const course = await Course.find(params.course)
+
+    if (!course) {
+      return response.status(404).send({ message: 'Resource not found' })
+    }
+
+    const video = await Video.find(params.video)
+
+    if(!video) {
+      return response.status(404).send({ message: 'Resource not found' })
+    }
+
+    // TODO - check user if he has a course
+
+    await video.load('section')
+    await video.section.load('course')
+
+    if(video.section.courseId !== course.id) {
+      return response.status(404).send({ message: 'Resource not found' })
+    }
+
+    return video
+  }
 }

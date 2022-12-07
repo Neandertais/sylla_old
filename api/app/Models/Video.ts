@@ -30,7 +30,7 @@ export default class Video extends BaseModel {
   @column()
   public courseSectionId: string
 
-  @belongsTo(() => CourseSection)
+  @belongsTo(() => CourseSection, { serializeAs: null })
   public section: BelongsTo<typeof CourseSection>
 
   @beforeCreate()
