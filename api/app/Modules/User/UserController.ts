@@ -49,11 +49,15 @@ export default class UsersController {
     })
 
     if (avatarImage) {
+      const filename = `${randomUUID().replace(/-/g, '')}.${avatarImage.extname}`
+
       await avatarImage.moveToDisk('./', {
-        name: `${randomUUID()}.${avatarImage.extname}`,
+        name: filename,
       })
 
-      auth.user?.merge({ avatarUrl: avatarImage.fileName })
+      // TODO - remove image
+
+      auth.user?.merge({ avatarUrl: filename })
     }
 
     const user = await auth.user?.save()

@@ -7,7 +7,7 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.string('username', 56).primary()
       table.string('name', 80)
-      table.string('avatar_url', 41)
+      table.string('avatar_url', 37)
       table.string('bio', 240)
       table.integer('cash')
 

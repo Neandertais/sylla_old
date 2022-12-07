@@ -8,7 +8,7 @@ export default class extends BaseSchema {
       table.string('id', 12).primary()
       table.string('name', 60)
       table.string('description', 200)
-      table.string('thumbnail_url', 41)
+      table.string('thumbnail_url', 37)
       table.integer('price').unsigned()
 
       table.string('owner_id', 56).references('users.username').onDelete('CASCADE')

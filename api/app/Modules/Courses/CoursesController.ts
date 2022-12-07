@@ -23,11 +23,13 @@ export default class CoursesController {
     })
 
     if (thumbnailImage) {
+      const filename = `${randomUUID().replace(/-/g, '')}.${thumbnailImage.extname}`
+
       await thumbnailImage.moveToDisk('./', {
-        name: `${randomUUID()}.${thumbnailImage.extname}`,
+        name: filename,
       })
 
-      course.thumbnailUrl = thumbnailImage.fileName || ''
+      course.thumbnailUrl = filename
     }
 
     await course.related('owner').associate(auth.user!)
@@ -93,11 +95,15 @@ export default class CoursesController {
     })
 
     if (thumbnailImage) {
+      const filename = `${randomUUID().replace(/-/g, '')}.${thumbnailImage.extname}`
+
       await thumbnailImage.moveToDisk('./', {
-        name: `${randomUUID()}.${thumbnailImage.extname}`,
+        name: filename,
       })
 
-      course.thumbnailUrl = thumbnailImage.fileName!
+      course.thumbnailUrl = filename
+
+      // TODO - remove image
     }
 
     await course.save()
@@ -119,6 +125,8 @@ export default class CoursesController {
     }
 
     await course.delete()
+
+    // TODO - remove image
 
     return { message: 'Course deleted successfully' }
   }
