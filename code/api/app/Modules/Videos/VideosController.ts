@@ -55,7 +55,7 @@ export default class VideosController {
     return response.status(201).send(video)
   }
 
-  public async findVideo({ auth, params, response }: HttpContextContract) {
+  public async findVideo({ params, response }: HttpContextContract) {
     const course = await Course.find(params.course)
 
     if (!course) {
