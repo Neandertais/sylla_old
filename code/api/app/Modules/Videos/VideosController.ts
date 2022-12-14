@@ -79,4 +79,29 @@ export default class VideosController {
 
     return video
   }
+
+  public async updateVideo({ auth, params, request, response }: HttpContextContract) {
+    const course = await Course.find(params.course)
+    const video = await Video.find(params.video)
+
+    if (!course || !video) {
+      return response.status(404).send({ message: 'Resource not found' })
+    }
+
+    if (course?.ownerId !== auth.user?.username) {
+      return response.status(401).send({ message: 'Unauthorized' })
+    }
+
+    const newVideoSchema = schema.create({
+      name: schema.string.optional([rules.minLength(6), rules.maxLength(40)]),
+      description: schema.string.optional([rules.maxLength(420)])
+    })
+
+    const payload = await request.validate({ schema: newVideoSchema })
+    video.merge(payload)
+
+    await video.save()
+
+    return video
+  }
 }
