@@ -4,4 +4,5 @@ Route.group(() => {
   Route.post('courses/:course/upload', 'VideosController.createVideo').middleware(['auth'])
   Route.get('courses/:course/:video', 'VideosController.findVideo').middleware(['auth'])
   Route.patch('courses/:course/:video', 'VideosController.updateVideo').middleware(['auth'])
+  Route.delete('courses/:course/:video', 'VideosController.deleteVideo').middleware(['auth'])
 }).namespace('App/Modules/Videos')

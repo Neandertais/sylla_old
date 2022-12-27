@@ -64,7 +64,7 @@ export default class VideosController {
 
     const video = await Video.find(params.video)
 
-    if(!video) {
+    if (!video) {
       return response.status(404).send({ message: 'Resource not found' })
     }
 
@@ -73,7 +73,7 @@ export default class VideosController {
     await video.load('section')
     await video.section.load('course')
 
-    if(video.section.courseId !== course.id) {
+    if (video.section.courseId !== course.id) {
       return response.status(404).send({ message: 'Resource not found' })
     }
 
@@ -103,5 +103,22 @@ export default class VideosController {
     await video.save()
 
     return video
+  }
+
+  public async deleteVideo({ auth, params, response }: HttpContextContract) {
+    const course = await Course.find(params.course)
+    const video = await Video.find(params.video)
+
+    if (!course || !video) {
+      return response.status(404).send({ message: 'Resource not found' })
+    }
+
+    if (course?.ownerId !== auth.user?.username) {
+      return response.status(401).send({ message: 'Unauthorized' })
+    }
+
+    await video.delete()
+
+    return { message: "Video deleted with success" }
   }
 }
