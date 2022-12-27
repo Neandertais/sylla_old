@@ -94,7 +94,7 @@ export default class VideosController {
 
     const newVideoSchema = schema.create({
       name: schema.string.optional([rules.minLength(6), rules.maxLength(40)]),
-      description: schema.string.optional([rules.maxLength(420)])
+      description: schema.string.optional([rules.maxLength(420)]),
     })
 
     const payload = await request.validate({ schema: newVideoSchema })
@@ -119,6 +119,6 @@ export default class VideosController {
 
     await video.delete()
 
-    return { message: "Video deleted with success" }
+    return { message: 'Video deleted with success' }
   }
 }

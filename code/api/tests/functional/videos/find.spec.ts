@@ -5,7 +5,7 @@ import User from 'App/Models/User'
 import Video from 'App/Models/Video'
 
 test.group('Videos find', () => {
-  test("find user by id", async ({ client }) => {
+  test('find user by id', async ({ client }) => {
     const user = await User.find('mateus')
     const course = await Course.create({ name: 'Javascript Course', ownerId: user?.username })
     const section = await CourseSection.create({ name: 'Introduction', courseId: course.id })
@@ -16,7 +16,7 @@ test.group('Videos find', () => {
     response.assertStatus(200)
     response.assertBodyContains({
       name: 'Hello mens',
-      course_section_id: section.id
+      course_section_id: section.id,
     })
   })
 })

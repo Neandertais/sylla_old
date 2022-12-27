@@ -30,7 +30,7 @@ test.group('Videos create', () => {
 
     response.assertStatus(201)
     response.assertBodyContains({
-      name: 'Configuring computer'
+      name: 'Configuring computer',
     })
   })
 })
