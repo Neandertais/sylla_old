@@ -21,7 +21,6 @@ export const CourseFactory = Factory.define(Course, ({ faker }) => {
   }
 })
   .relation('owner', () => UserFactory)
-  .relation('sections', () => CourseSectionFactory)
   .build()
 
 export const CourseSectionFactory = Factory.define(CourseSection, ({ faker }) => {
