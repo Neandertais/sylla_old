@@ -12,6 +12,14 @@ export default class AuthenticationController {
 
     const { username, email, password } = await request.validate({ schema: newUserSchema })
 
+    if (await User.find(username.toLowerCase())) {
+      return response.status(409).send({ message: 'Username already used' })
+    }
+
+    if (await User.findBy('email', email)) {
+      return response.status(409).send({ message: 'Email already used' })
+    }
+
     const user = await User.create({ username, email, password })
 
     const token = await auth.use('api').generate(user)
