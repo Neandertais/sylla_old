@@ -1,18 +1,31 @@
 import { test } from '@japa/runner'
-import Course from 'App/Models/Course'
-import CourseSection from 'App/Models/CourseSection'
-import User from 'App/Models/User'
-import Video from 'App/Models/Video'
+import { UserFactory, VideoFactory } from 'Database/factories'
 
 test.group('Delete video', () => {
   test('Delete video', async ({ client }) => {
-    const user = await User.find('mateus')
-    const course = await Course.create({ name: 'Best course', ownerId: user?.username })
-    const section = await CourseSection.create({ name: 'Part 1', courseId: course.id })
-    const video = await Video.create({ name: 'Introduction', courseSectionId: section.id })
+    const user = await UserFactory.create()
+    const video = await VideoFactory.with('section', 1, (section) =>
+      section.with('course', 1, (course) => course.merge({ ownerId: user?.username }))
+    ).create()
 
-    const response = await client.delete(`/courses/${course.id}/${video.id}`).loginAs(user!)
+    const response = await client
+      .delete(`/courses/${video.section.course.id}/${video.id}`)
+      .loginAs(user!)
 
     response.assertStatus(200)
+  })
+
+  test('not delete video if user not owner', async ({ client }) => {
+    const user = await UserFactory.create()
+    const secondUser = await UserFactory.create()
+    const video = await VideoFactory.with('section', 1, (section) =>
+      section.with('course', 1, (course) => course.merge({ ownerId: secondUser.username }))
+    ).create()
+
+    const response = await client
+      .delete(`/courses/${video.section.course.id}/${video.id}`)
+      .loginAs(user)
+
+    response.assertStatus(401)
   })
 })
