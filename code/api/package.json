@@ -8,6 +8,10 @@
     "start": "node server.js",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write .",
+    "test": "node ace test",
+    "testWatch": "node ace test -w",
+    "docker:test": "docker exec -it adonis_app node ace test",
+    "docker:testWatch": "docker exec -it adonis_app node ace test -w",
     "dockerAttach": "docker exec -it adonis_app /bin/sh",
     "dockerAttachRedis": "docker exec -it redis /bin/sh",
     "dockerAttachPostgres": "docker exec -it postgres /bin/sh"
