@@ -1,6 +1,18 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeSave, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, beforeCreate, beforeSave, column } from '@ioc:Adonis/Lucid/Orm'
 import Hash from '@ioc:Adonis/Core/Hash'
+
+enum Platforms {
+  Website = 'Website',
+  Facebook = 'Facebook',
+  Instagram = 'Instagram',
+  LinkedIn = 'LinkedIn',
+}
+
+interface SocialLink {
+  platform: Platforms
+  link: string
+}
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -10,10 +22,16 @@ export default class User extends BaseModel {
   public name: string
 
   @column()
-  public avatarUrl: string
+  public profession: string
 
   @column()
-  public bio: string
+  public biography: string
+
+  @column()
+  public avatar: string
+
+  @column()
+  public socialLinks: SocialLink[]
 
   @column()
   public cash: number
@@ -36,5 +54,10 @@ export default class User extends BaseModel {
     if (user.$dirty.username) {
       user.username = user.username.toLowerCase()
     }
+  }
+
+  @beforeCreate()
+  public static async assignInitialValues(user: User) {
+    user.cash = 50
   }
 }

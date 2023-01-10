@@ -18,7 +18,7 @@ test.group('User edit', () => {
     const userInfo = {
       username: 'grilario1234',
       name: 'Luis Fernando',
-      bio: 'Programmer Javascript',
+      biography: 'Programmer Javascript',
     }
 
     const fakeAvatar = await file.generateJpg('1mb')

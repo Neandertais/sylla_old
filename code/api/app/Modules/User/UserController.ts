@@ -1,6 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { randomUUID } from 'node:crypto'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import { nanoid } from 'nanoid'
 import User from 'App/Models/User'
 
 export default class UsersController {
@@ -31,7 +31,7 @@ export default class UsersController {
     const editUserSchema = schema.create({
       username: schema.string.optional([rules.trim(), rules.minLength(6), rules.maxLength(56)]),
       name: schema.string.optional([rules.minLength(6), rules.maxLength(80)]),
-      bio: schema.string.optional([rules.minLength(12), rules.maxLength(240)]),
+      biography: schema.string.optional([rules.minLength(12), rules.maxLength(240)]),
     })
 
     const payload = await request.validate({ schema: editUserSchema })
@@ -49,7 +49,7 @@ export default class UsersController {
     })
 
     if (avatarImage) {
-      const filename = `${randomUUID().replace(/-/g, '')}.${avatarImage.extname}`
+      const filename = `${nanoid()}.${avatarImage.extname}`
 
       await avatarImage.moveToDisk('./', {
         name: filename,
@@ -57,7 +57,7 @@ export default class UsersController {
 
       // TODO - remove image
 
-      auth.user?.merge({ avatarUrl: filename })
+      auth.user?.merge({ avatar: filename })
     }
 
     const user = await auth.user?.save()
