@@ -35,13 +35,9 @@
   ],
   "prettier": {
     "trailingComma": "es5",
-    "semi": false,
-    "singleQuote": true,
-    "useTabs": false,
-    "quoteProps": "consistent",
-    "bracketSpacing": true,
-    "arrowParens": "always",
-    "printWidth": 100
+    "semi": true,
+    "singleQuote": false,
+    "arrowParens": "avoid"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.9.5",
