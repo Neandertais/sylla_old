@@ -36,8 +36,7 @@
   "prettier": {
     "trailingComma": "es5",
     "semi": true,
-    "singleQuote": false,
-    "arrowParens": "avoid"
+    "singleQuote": false
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.9.5",

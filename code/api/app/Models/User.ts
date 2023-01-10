@@ -1,63 +1,72 @@
-import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, beforeSave, column } from '@ioc:Adonis/Lucid/Orm'
-import Hash from '@ioc:Adonis/Core/Hash'
+import { DateTime } from "luxon";
+import {
+  BaseModel,
+  beforeCreate,
+  beforeSave,
+  column,
+} from "@ioc:Adonis/Lucid/Orm";
+import Hash from "@ioc:Adonis/Core/Hash";
 
 enum Platforms {
-  Website = 'Website',
-  Facebook = 'Facebook',
-  Instagram = 'Instagram',
-  LinkedIn = 'LinkedIn',
+  Website = "Website",
+  Facebook = "Facebook",
+  Instagram = "Instagram",
+  LinkedIn = "LinkedIn",
 }
 
 interface SocialLink {
-  platform: Platforms
-  link: string
+  platform: Platforms;
+  link: string;
 }
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
-  public username: string
+  public username: string;
 
   @column()
-  public name: string
+  public name: string;
 
   @column()
-  public profession: string
+  public profession: string;
 
   @column()
-  public biography: string
+  public biography: string;
 
   @column()
-  public avatar: string
+  public avatar: string;
 
   @column()
-  public socialLinks: SocialLink[]
+  public socialLinks: SocialLink[];
 
   @column()
-  public cash: number
+  public cash: number;
 
   @column()
-  public email: string
+  public email: string;
 
   @column({ serializeAs: null })
-  public password: string
+  public password: string;
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+  public createdAt: DateTime;
 
   @beforeSave()
   public static async hashPassword(user: User) {
     if (user.$dirty.password) {
-      user.password = await Hash.make(user.password)
+      user.password = await Hash.make(user.password);
     }
 
     if (user.$dirty.username) {
-      user.username = user.username.toLowerCase()
+      user.username = user.username.toLowerCase();
+    }
+
+    if (user.$dirty.email) {
+      user.email = user.email.toLowerCase();
     }
   }
 
   @beforeCreate()
   public static async assignInitialValues(user: User) {
-    user.cash = 50
+    user.cash = 50;
   }
 }
