@@ -7,7 +7,7 @@ import {
 } from "@ioc:Adonis/Lucid/Orm";
 import Hash from "@ioc:Adonis/Core/Hash";
 
-enum Platforms {
+export enum Platforms {
   Website = "Website",
   Facebook = "Facebook",
   Instagram = "Instagram",
@@ -35,7 +35,9 @@ export default class User extends BaseModel {
   @column()
   public avatar: string;
 
-  @column()
+  @column({
+    prepare: (value) => JSON.stringify(value),
+  })
   public socialLinks: SocialLink[];
 
   @column()
