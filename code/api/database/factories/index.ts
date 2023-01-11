@@ -2,7 +2,7 @@ import Factory from "@ioc:Adonis/Lucid/Factory";
 import { nanoid } from "nanoid";
 
 import Course from "App/Models/Course";
-import CourseSection from "App/Models/CourseSection";
+import Section from "App/Models/Section";
 import User, { Platforms } from "App/Models/User";
 import Video from "App/Models/Video";
 
@@ -31,14 +31,12 @@ export const CourseFactory = Factory.define(Course, ({ faker }) => {
   .relation("owner", () => UserFactory)
   .build();
 
-export const CourseSectionFactory = Factory.define(
-  CourseSection,
-  ({ faker }) => {
-    return {
-      name: faker.lorem.words(),
-    };
-  }
-)
+export const SectionFactory = Factory.define(Section, ({ faker }) => {
+  return {
+    name: faker.lorem.words(),
+    position: parseInt(faker.random.numeric(2)),
+  };
+})
   .relation("course", () => CourseFactory)
   .build();
 
@@ -48,5 +46,5 @@ export const VideoFactory = Factory.define(Video, ({ faker }) => {
     description: faker.lorem.paragraph(),
   };
 })
-  .relation("section", () => CourseSectionFactory)
+  .relation("section", () => SectionFactory)
   .build();

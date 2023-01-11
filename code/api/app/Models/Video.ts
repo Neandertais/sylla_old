@@ -1,40 +1,46 @@
-import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, belongsTo, BelongsTo, column } from '@ioc:Adonis/Lucid/Orm'
-import { randomBytes } from 'node:crypto'
-import CourseSection from './CourseSection'
+import { DateTime } from "luxon";
+import {
+  BaseModel,
+  beforeCreate,
+  belongsTo,
+  BelongsTo,
+  column,
+} from "@ioc:Adonis/Lucid/Orm";
+import { randomBytes } from "node:crypto";
+import Section from "App/Models/Section";
 
-type VideoQualities = ['1080p'?, '720p'?, '480p'?, '360p'?]
+type VideoQualities = ["1080p"?, "720p"?, "480p"?, "360p"?];
 
 export default class Video extends BaseModel {
   @column({ isPrimary: true })
-  public id: string
+  public id: string;
 
   @column()
-  public name: string
+  public name: string;
 
   @column()
-  public description: string
+  public description: string;
 
   @column()
-  public video: string
+  public video: string;
 
   @column()
-  public duration: string
+  public duration: string;
 
   @column()
-  public quality: VideoQualities[]
+  public quality: VideoQualities[];
 
   @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime
+  public createdAt: DateTime;
 
   @column()
-  public courseSectionId: string
+  public sectionId: string;
 
-  @belongsTo(() => CourseSection, { serializeAs: null })
-  public section: BelongsTo<typeof CourseSection>
+  @belongsTo(() => Section, { serializeAs: null })
+  public section: BelongsTo<typeof Section>;
 
   @beforeCreate()
   public static async generateId(section: Video) {
-    section.id = randomBytes(6).toString('hex')
+    section.id = randomBytes(6).toString("hex");
   }
 }

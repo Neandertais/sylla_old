@@ -1,6 +1,6 @@
 import { test } from '@japa/runner'
 import Course from 'App/Models/Course'
-import CourseSection from 'App/Models/CourseSection'
+import Section from 'App/Models/Section'
 import User from 'App/Models/User'
 import { file } from '@ioc:Adonis/Core/Helpers'
 import Drive from '@ioc:Adonis/Core/Drive'
@@ -9,7 +9,7 @@ test.group('Videos create', () => {
   test('create video', async ({ client, assert }) => {
     const user = await User.find('mateus')
     const course = await Course.create({ name: 'Javascript Course', ownerId: user?.username })
-    const section = await CourseSection.create({ name: 'Introduction', courseId: course.id })
+    const section = await Section.create({ name: 'Introduction', courseId: course.id })
 
     const fakeVideo = await file.generateGif('5mb')
 

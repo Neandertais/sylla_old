@@ -2,7 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { randomUUID } from 'node:crypto'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Course from 'App/Models/Course'
-import CourseSection from 'App/Models/CourseSection'
+import Section from 'App/Models/Section'
 import Video from 'App/Models/Video'
 
 export default class VideosController {
@@ -25,7 +25,7 @@ export default class VideosController {
 
     const payload = await request.validate({ schema: newVideoSchema })
 
-    const section = await CourseSection.find(payload.section)
+    const section = await Section.find(payload.section)
 
     if (!section || section.courseId !== course.id) {
       return response.status(404).send({ message: 'Resource not found' })
