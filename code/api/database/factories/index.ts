@@ -1,6 +1,8 @@
+import Factory from "@ioc:Adonis/Lucid/Factory";
+import { nanoid } from "nanoid";
+
 import Course from "App/Models/Course";
 import CourseSection from "App/Models/CourseSection";
-import Factory from "@ioc:Adonis/Lucid/Factory";
 import User, { Platforms } from "App/Models/User";
 import Video from "App/Models/Video";
 
@@ -19,7 +21,10 @@ export const UserFactory = Factory.define(User, ({ faker }) => {
 export const CourseFactory = Factory.define(Course, ({ faker }) => {
   return {
     name: faker.lorem.words(),
+    shortDescription: faker.lorem.sentence(),
     description: faker.lorem.sentence(),
+    willLearn: faker.lorem.sentence(),
+    thumbnail: nanoid() + ".jpg",
     price: Math.floor(Math.random() * 30),
   };
 })

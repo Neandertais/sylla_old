@@ -5,44 +5,50 @@ import {
   BelongsTo,
   belongsTo,
   column,
-} from '@ioc:Adonis/Lucid/Orm'
-import User from 'App/Models/User'
-import { nanoid } from 'nanoid'
+} from "@ioc:Adonis/Lucid/Orm";
+import User from "App/Models/User";
+import { nanoid } from "nanoid";
 
 export default class Course extends BaseModel {
   @column({ isPrimary: true })
-  public id: string
+  public id: string;
 
   @column()
-  public name: string
+  public name: string;
+
+  @column({ serializeAs: "shortDescription" })
+  public shortDescription: string;
 
   @column()
-  public description: string
+  public description: string;
+
+  @column({ serializeAs: "willLearn" })
+  public willLearn: string;
 
   @column()
-  public thumbnailUrl: string
+  public thumbnail: string;
 
   @column()
-  public price: number
+  public price: number;
 
   @column()
-  public ownerId: string
+  public ownerId: string;
 
   @belongsTo(() => User, {
-    foreignKey: 'ownerId',
-    localKey: 'username',
+    foreignKey: "ownerId",
+    localKey: "username",
   })
-  public owner: BelongsTo<typeof User>
+  public owner: BelongsTo<typeof User>;
 
   @beforeCreate()
   public static async generateId(course: Course) {
-    course.id = nanoid(12)
+    course.id = nanoid();
   }
 
   @beforeSave()
   public static async convertPriceToInteger(course: Course) {
     if (course.$dirty.price) {
-      course.price = Math.round(course.price)
+      course.price = Math.round(course.price);
     }
   }
 }

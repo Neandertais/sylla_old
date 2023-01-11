@@ -1,39 +1,90 @@
-import { test } from '@japa/runner'
-import User from 'App/Models/User'
-import { file } from '@ioc:Adonis/Core/Helpers'
-import Drive from '@ioc:Adonis/Core/Drive'
-import Course from 'App/Models/Course'
+import Database from "@ioc:Adonis/Lucid/Database";
+import Drive from "@ioc:Adonis/Core/Drive";
+import { file } from "@ioc:Adonis/Core/Helpers";
+import { test } from "@japa/runner";
+import { CourseFactory, UserFactory } from "Database/factories";
 
-test.group('Update create', () => {
-  test('update course', async ({ client }) => {
-    const user = await User.find('mateus')
-    const course = await Course.create({
-      name: 'Best course',
-      description: 'The best of course',
-      ownerId: user?.username,
-    })
+test.group("Courses update", (group) => {
+  group.each.setup(async () => {
+    await Database.beginGlobalTransaction();
+    return () => Database.rollbackGlobalTransaction();
+  });
 
-    const fakeThumbnail = await file.generateJpg('1mb')
+  test("should return unauthorized when not logged", async ({ client }) => {
+    const response = await client.patch("api/v1/courses/any");
 
-    const drive = Drive.fake()
+    response.assertStatus(401);
+  });
+
+  test("should return not found when course not exists", async ({ client }) => {
+    const user = await UserFactory.create();
+
+    const response = await client.patch("api/v1/courses/any").loginAs(user);
+
+    response.assertStatus(404);
+    response.assertBody({ error: "Course not found" });
+  });
+
+  test("should return unauthorized when logged in user is not the course owner", async ({
+    client,
+  }) => {
+    const user = await UserFactory.create();
+    const course = await CourseFactory.create();
 
     const response = await client
-      .patch(`courses/${course.id}`)
-      .file('thumbnail', fakeThumbnail.contents, { filename: fakeThumbnail.name })
-      .fields({
-        name: 'Como programar com Javascript',
-        description: 'Aprenda o melhor do Javascript comigo',
-        price: 13,
-      })
-      .loginAs(user!)
+      .patch(`api/v1/courses/${course.id}`)
+      .loginAs(user);
 
-    drive.restore('local')
+    response.assertStatus(401);
+    response.assertBody({ error: "Unauthorized" });
+  });
 
-    response.assertStatus(200)
+  test("should return course object when updated properties", async ({
+    client,
+    assert,
+  }) => {
+    const course = await CourseFactory.with("owner").create();
+    const newCourse = await CourseFactory.make();
+    const thumbnail = await file.generateJpg("1mb");
+
+    const fakeDrive = Drive.fake();
+
+    const response = await client
+      .put(`api/v1/courses/${course.id}`)
+      .file("thumbnail", thumbnail.contents, { filename: thumbnail.name })
+      .fields(newCourse.$attributes)
+      .loginAs(course.owner);
+
+    assert.isTrue(await fakeDrive.exists(thumbnail.name));
+
+    fakeDrive.restore("local");
+
+    response.assertStatus(200);
     response.assertBodyContains({
-      name: 'Como programar com Javascript',
-      description: 'Aprenda o melhor do Javascript comigo',
-      price: 13,
-    })
-  })
-})
+      name: newCourse.name,
+      shortDescription: newCourse.shortDescription,
+      description: newCourse.description,
+      willLearn: newCourse.willLearn,
+      price: newCourse.price,
+    });
+  });
+
+  test("should return error status when submitted invalid properties", async ({
+    client,
+  }) => {
+    const course = await CourseFactory.with("owner").create();
+
+    const response = await client
+      .patch(`api/v1/courses/${course.id}`)
+      .json({
+        name: "A",
+        shortDescription: "B",
+        description: "C",
+        willLearn: "D",
+        price: "C",
+      })
+      .loginAs(course.owner);
+
+    response.assertStatus(400);
+  });
+});

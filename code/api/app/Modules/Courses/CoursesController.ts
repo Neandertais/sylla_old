@@ -1,133 +1,178 @@
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
-import Course from 'App/Models/Course'
-import User from 'App/Models/User'
-import { randomUUID } from 'node:crypto'
+import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import { schema, rules } from "@ioc:Adonis/Core/Validator";
+import Course from "App/Models/Course";
+import { nanoid } from "nanoid";
 
 export default class CoursesController {
-  public async createCourse({ auth, request, response }: HttpContextContract) {
-    const newCourseSchema = schema.create({
-      name: schema.string([rules.minLength(12), rules.maxLength(60)]),
-      description: schema.string([rules.minLength(12), rules.maxLength(200)]),
-      price: schema.number(),
-    })
+  public async index({}: HttpContextContract) {
+    // TODO: paginate, list by keyword, by owner
 
-    const payload = await request.validate({ schema: newCourseSchema })
+    // TODO: order by evaluation
+    const courses = Course.query().select("*");
 
-    const course = new Course()
-    course.fill(payload)
-
-    const thumbnailImage = request.file('thumbnail', {
-      size: '5mb',
-      extnames: ['jpg', 'png', 'webp'],
-    })
-
-    if (thumbnailImage) {
-      const filename = `${randomUUID().replace(/-/g, '')}.${thumbnailImage.extname}`
-
-      await thumbnailImage.moveToDisk('./', {
-        name: filename,
-      })
-
-      course.thumbnailUrl = filename
-    }
-
-    await course.related('owner').associate(auth.user!)
-
-    const courseData = await course.save()
-
-    return response.status(201).send({
-      data: courseData.toJSON(),
-    })
+    return courses;
   }
 
-  public async findCourse({ params, response }: HttpContextContract) {
-    const courseId = params.id
+  public async store({
+    auth: { user },
+    request,
+    response,
+  }: HttpContextContract) {
+    const storeCourseSchema = schema.create({
+      name: schema.string([
+        rules.trim(),
+        rules.minLength(12),
+        rules.maxLength(120),
+      ]),
+      shortDescription: schema.string([
+        rules.minLength(20),
+        rules.maxLength(560),
+      ]),
+      description: schema.string.optional([
+        rules.minLength(20),
+        rules.maxLength(1200),
+      ]),
+      willLearn: schema.string.optional([
+        rules.minLength(20),
+        rules.maxLength(840),
+      ]),
+      price: schema.number.optional(),
+    });
 
-    const course = await Course.find(courseId)
+    try {
+      const payload = await request.validate({ schema: storeCourseSchema });
+
+      // Create curse and associate with user authenticated
+      const course = new Course();
+      course.fill(payload);
+      await course.related("owner").associate(user!);
+
+      // Upload thumbnail image
+      const thumbnail = request.file("thumbnail", {
+        size: "10mb",
+        extnames: ["jpg", "png", "webp"],
+      });
+
+      if (thumbnail) {
+        const filename = `${nanoid()}.${thumbnail.extname}`;
+
+        await thumbnail.moveToDisk("./", {
+          name: filename,
+        });
+
+        course.merge({ thumbnail: filename });
+      }
+
+      await course.save();
+
+      return response.created(course);
+    } catch (error) {
+      return response.badRequest(error.messages);
+    }
+  }
+
+  public async show({ params: { id }, response }: HttpContextContract) {
+    const course = await Course.find(id);
 
     if (!course) {
-      return response.status(404).send({ message: 'Resource not found' })
+      return response.notFound({ error: "Course not found" });
     }
 
-    return course
+    return course;
   }
 
-  public async listCoursesByUsername({ params, response }: HttpContextContract) {
-    const username = params.username
-    const user = await User.find(username)
+  public async update({
+    auth: { user },
+    params: { id },
+    request,
+    response,
+  }: HttpContextContract) {
+    const course = await Course.find(id);
 
-    if (!user) {
-      return response.status(404).send({ message: 'Resource not found' })
-    }
-
-    const courses = await Course.query().where('ownerId', username)
-
-    return courses
-  }
-
-  public async updateCourse({ auth, params, request, response }: HttpContextContract) {
-    const courseId = params.id
-
-    const course = await Course.find(courseId)
-
+    // Check if course exists
     if (!course) {
-      return response.status(404).send({ message: 'Resource not found' })
+      return response.notFound({ error: "Course not found" });
     }
 
-    if (course.ownerId !== auth.user?.username) {
-      return response.status(401).send({ message: 'Unauthorized' })
+    // Check if the authenticated user is the course owner
+    if (course.ownerId !== user?.username) {
+      return response.unauthorized({ error: "Unauthorized" });
     }
 
     const updateCourseSchema = schema.create({
-      name: schema.string([rules.minLength(12), rules.maxLength(60)]),
-      description: schema.string([rules.minLength(12), rules.maxLength(200)]),
-      price: schema.number(),
-    })
+      name: schema.string.optional([
+        rules.trim(),
+        rules.minLength(12),
+        rules.maxLength(120),
+      ]),
+      shortDescription: schema.string.optional([
+        rules.minLength(20),
+        rules.maxLength(560),
+      ]),
+      description: schema.string.optional([
+        rules.minLength(20),
+        rules.maxLength(1200),
+      ]),
+      willLearn: schema.string.optional([
+        rules.minLength(20),
+        rules.maxLength(840),
+      ]),
+      price: schema.number.optional(),
+    });
 
-    const payload = await request.validate({ schema: updateCourseSchema })
+    try {
+      const payload = await request.validate({ schema: updateCourseSchema });
 
-    course.merge(payload)
+      // Merge course
+      course.merge(payload);
 
-    const thumbnailImage = request.file('thumbnail', {
-      size: '5mb',
-      extnames: ['jpg', 'png', 'webp'],
-    })
+      // Upload thumbnail image
+      const thumbnail = request.file("thumbnail", {
+        size: "10mb",
+        extnames: ["jpg", "png", "webp"],
+      });
 
-    if (thumbnailImage) {
-      const filename = `${randomUUID().replace(/-/g, '')}.${thumbnailImage.extname}`
+      if (thumbnail) {
+        const filename = `${nanoid()}.${thumbnail.extname}`;
 
-      await thumbnailImage.moveToDisk('./', {
-        name: filename,
-      })
+        await thumbnail.moveToDisk("./", {
+          name: filename,
+        });
 
-      course.thumbnailUrl = filename
+        // TODO - remove image
 
-      // TODO - remove image
+        course.merge({ thumbnail: filename });
+      }
+
+      await course.save();
+
+      return response.ok(course);
+    } catch (error) {
+      return response.badRequest(error.messages);
     }
-
-    await course.save()
-
-    return course
   }
 
-  public async deleteCourse({ auth, params, response }: HttpContextContract) {
-    const courseId = params.id
+  public async destroy({
+    auth: { user },
+    params: { id },
+    response,
+  }: HttpContextContract) {
+    const course = await Course.find(id);
 
-    const course = await Course.find(courseId)
-
+    // Check if course exists
     if (!course) {
-      return response.status(404).send({ message: 'Resource not found' })
+      return response.status(404).send({ error: "Course not found" });
     }
 
-    if (course.ownerId !== auth.user?.username) {
-      return response.status(401).send({ message: 'Unauthorized' })
+    // Check if the authenticated user is the course owner
+    if (course.ownerId !== user?.username) {
+      return response.unauthorized({ error: "Unauthorized" });
     }
 
-    await course.delete()
+    // Delete course
+    await course.delete();
+    // TODO - remove thumbnail
 
-    // TODO - remove image
-
-    return { message: 'Course deleted successfully' }
+    return response.noContent();
   }
 }
