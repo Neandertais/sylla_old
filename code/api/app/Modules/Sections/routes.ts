@@ -8,7 +8,7 @@ export default function sectionsRouter() {
       .as("sections")
       .middleware({ store: ["auth"], update: ["auth"], destroy: ["auth"] });
     Route.post("sections/:id/reorder", "SectionsController.updateOrder")
-      .as("section.reorder")
+      .as("sections.reorder")
       .middleware(["auth"]);
   }).namespace("App/Modules/Sections");
 }
