@@ -2,7 +2,7 @@ import Database from "@ioc:Adonis/Lucid/Database";
 import { test } from "@japa/runner";
 import { CourseFactory, SectionFactory, UserFactory } from "Database/factories";
 
-test.group("Section store", (group) => {
+test.group("Sections store", (group) => {
   group.each.setup(async () => {
     await Database.beginGlobalTransaction();
     return () => Database.rollbackGlobalTransaction();
