@@ -1,8 +1,14 @@
-import Route from '@ioc:Adonis/Core/Route'
+import Route from "@ioc:Adonis/Core/Route";
 
-Route.group(() => {
-  Route.post('courses/:course/upload', 'VideosController.createVideo').middleware(['auth'])
-  Route.get('courses/:course/:video', 'VideosController.findVideo').middleware(['auth'])
-  Route.patch('courses/:course/:video', 'VideosController.updateVideo').middleware(['auth'])
-  Route.delete('courses/:course/:video', 'VideosController.deleteVideo').middleware(['auth'])
-}).namespace('App/Modules/Videos')
+export default function videosRouter() {
+  Route.group(() => {
+    Route.shallowResource("sections.videos", "VideosController")
+      .apiOnly()
+      .paramFor("sections", "section")
+      .as("videos")
+      .middleware({ "*": ["auth"] });
+    Route.post("videos/:id/upload", "VideosController.upload")
+      .as("videos.upload")
+      .middleware(["auth"]);
+  }).namespace("App/Modules/Videos");
+}

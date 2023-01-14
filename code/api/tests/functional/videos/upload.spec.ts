@@ -1,4 +1,6 @@
 import Database from "@ioc:Adonis/Lucid/Database";
+import Drive from "@ioc:Adonis/Core/Drive";
+import { file } from "@ioc:Adonis/Core/Helpers";
 import { test } from "@japa/runner";
 import { VideoFactory, UserFactory } from "Database/factories";
 
@@ -9,7 +11,7 @@ test.group("Videos update", (group) => {
   });
 
   test("should return unauthorized when not logged", async ({ client }) => {
-    const response = await client.patch("api/v1/videos/any");
+    const response = await client.post("api/v1/videos/any/upload");
 
     response.assertStatus(401);
   });
@@ -17,7 +19,9 @@ test.group("Videos update", (group) => {
   test("should return not found when video not exists", async ({ client }) => {
     const user = await UserFactory.create();
 
-    const response = await client.patch("api/v1/videos/any").loginAs(user);
+    const response = await client
+      .post("api/v1/videos/any/upload")
+      .loginAs(user);
 
     response.assertStatus(404);
     response.assertBody({ error: "Video not found" });
@@ -30,46 +34,50 @@ test.group("Videos update", (group) => {
     const video = await VideoFactory.with("section", 1, (section) =>
       section.with("course", 1, (course) => course.with("owner"))
     ).create();
-    const newVideo = await VideoFactory.make();
 
     const response = await client
-      .patch(`api/v1/videos/${video.id}`)
-      .json({ name: newVideo.name })
+      .post(`api/v1/videos/${video.id}/upload`)
       .loginAs(user);
 
     response.assertStatus(401);
     response.assertBody({ error: "Unauthorized" });
   });
 
-  test("should return video object when updated properties", async ({
+  test("should return no content when upload successful", async ({
     client,
+    assert,
   }) => {
     const video = await VideoFactory.with("section", 1, (section) =>
       section.with("course", 1, (course) => course.with("owner"))
     ).create();
-    const newVideo = await VideoFactory.make();
+    const videoFile = await file.generateGif("1mb");
+
+    const fakeDrive = Drive.fake();
 
     const response = await client
-      .patch(`api/v1/videos/${video.id}`)
-      .json({ name: newVideo.name })
+      .post(`api/v1/videos/${video.id}/upload`)
+      .file("video", videoFile.contents, { filename: videoFile.name })
       .loginAs(video.section.course.owner);
 
-    response.assertStatus(200);
-    response.assertBodyContains({ name: newVideo.name });
+    assert.isTrue(await fakeDrive.exists(videoFile.name));
+
+    fakeDrive.restore("local");
+
+    response.assertStatus(204);
   });
 
-  test("should return error status when name submitted is invalid", async ({
-    client,
-  }) => {
+  test("should return unauthorized media", async ({ client }) => {
     const video = await VideoFactory.with("section", 1, (section) =>
       section.with("course", 1, (course) => course.with("owner"))
     ).create();
+    const videoFile = await file.generatePng("1mb");
 
     const response = await client
-      .patch(`api/v1/videos/${video.id}`)
-      .json({ name: "A" })
+      .post(`api/v1/videos/${video.id}/upload`)
+      .file("video", videoFile.contents, { filename: videoFile.name })
       .loginAs(video.section.course.owner);
 
-    response.assertStatus(400);
+    response.assertStatus(415);
+    response.assertBody({ error: "Unsupported Media" });
   });
 });

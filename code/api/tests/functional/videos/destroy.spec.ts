@@ -2,14 +2,14 @@ import Database from "@ioc:Adonis/Lucid/Database";
 import { test } from "@japa/runner";
 import { VideoFactory, UserFactory } from "Database/factories";
 
-test.group("Videos update", (group) => {
+test.group("Videos destroy", (group) => {
   group.each.setup(async () => {
     await Database.beginGlobalTransaction();
     return () => Database.rollbackGlobalTransaction();
   });
 
   test("should return unauthorized when not logged", async ({ client }) => {
-    const response = await client.patch("api/v1/videos/any");
+    const response = await client.delete("api/v1/videos/any");
 
     response.assertStatus(401);
   });
@@ -17,7 +17,7 @@ test.group("Videos update", (group) => {
   test("should return not found when video not exists", async ({ client }) => {
     const user = await UserFactory.create();
 
-    const response = await client.patch("api/v1/videos/any").loginAs(user);
+    const response = await client.delete("api/v1/videos/any").loginAs(user);
 
     response.assertStatus(404);
     response.assertBody({ error: "Video not found" });
@@ -30,35 +30,16 @@ test.group("Videos update", (group) => {
     const video = await VideoFactory.with("section", 1, (section) =>
       section.with("course", 1, (course) => course.with("owner"))
     ).create();
-    const newVideo = await VideoFactory.make();
 
     const response = await client
-      .patch(`api/v1/videos/${video.id}`)
-      .json({ name: newVideo.name })
+      .delete(`api/v1/videos/${video.id}`)
       .loginAs(user);
 
     response.assertStatus(401);
     response.assertBody({ error: "Unauthorized" });
   });
 
-  test("should return video object when updated properties", async ({
-    client,
-  }) => {
-    const video = await VideoFactory.with("section", 1, (section) =>
-      section.with("course", 1, (course) => course.with("owner"))
-    ).create();
-    const newVideo = await VideoFactory.make();
-
-    const response = await client
-      .patch(`api/v1/videos/${video.id}`)
-      .json({ name: newVideo.name })
-      .loginAs(video.section.course.owner);
-
-    response.assertStatus(200);
-    response.assertBodyContains({ name: newVideo.name });
-  });
-
-  test("should return error status when name submitted is invalid", async ({
+  test("should return no content status when video deleted", async ({
     client,
   }) => {
     const video = await VideoFactory.with("section", 1, (section) =>
@@ -66,10 +47,9 @@ test.group("Videos update", (group) => {
     ).create();
 
     const response = await client
-      .patch(`api/v1/videos/${video.id}`)
-      .json({ name: "A" })
+      .delete(`api/v1/videos/${video.id}`)
       .loginAs(video.section.course.owner);
 
-    response.assertStatus(400);
+    response.assertStatus(204);
   });
 });

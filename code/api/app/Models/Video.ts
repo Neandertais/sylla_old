@@ -6,10 +6,15 @@ import {
   BelongsTo,
   column,
 } from "@ioc:Adonis/Lucid/Orm";
-import { randomBytes } from "node:crypto";
 import Section from "App/Models/Section";
+import { nanoid } from "nanoid";
 
-type VideoQualities = ["1080p"?, "720p"?, "480p"?, "360p"?];
+enum VideoQualities {
+  "1080p",
+  "720p",
+  "480p",
+  "360p",
+}
 
 export default class Video extends BaseModel {
   @column({ isPrimary: true })
@@ -27,20 +32,22 @@ export default class Video extends BaseModel {
   @column()
   public duration: string;
 
-  @column()
-  public quality: VideoQualities[];
-
-  @column.dateTime({ autoCreate: true })
-  public createdAt: DateTime;
+  @column({
+    prepare: (value) => JSON.stringify(value),
+  })
+  public qualities: VideoQualities[];
 
   @column()
   public sectionId: string;
+
+  @column.dateTime({ autoCreate: true })
+  public createdAt: DateTime;
 
   @belongsTo(() => Section, { serializeAs: null })
   public section: BelongsTo<typeof Section>;
 
   @beforeCreate()
-  public static async generateId(section: Video) {
-    section.id = randomBytes(6).toString("hex");
+  public static async generateId(video: Video) {
+    video.id = nanoid();
   }
 }

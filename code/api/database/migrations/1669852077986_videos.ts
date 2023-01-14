@@ -5,12 +5,12 @@ export default class extends BaseSchema {
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.string("id", 12).primary();
-      table.string("name", 40);
-      table.string("description", 420);
-      table.string("video", 37);
-      table.string("duration", 8);
-      table.string("quality", 30);
+      table.string("id", 21).primary();
+      table.string("name", 100);
+      table.string("description", 5000);
+      table.string("video", 26);
+      table.jsonb("qualities");
+      table.integer("duration");
 
       table.string("section_id", 30).references("sections.id");
       table.timestamp("created_at", { useTz: true });

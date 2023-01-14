@@ -4,7 +4,7 @@ import authenticationRouter from "App/Modules/Authentication/routes";
 import usersRouter from "App/Modules/Users/routes";
 import coursesRouter from "App/Modules/Courses/routes";
 import sectionsRouter from "App/Modules/Sections/routes";
-import "App/Modules/Videos/routes";
+import videosRouter from "App/Modules/Videos/routes";
 
 Route.group(() => {
   Route.group(() => {
@@ -12,5 +12,6 @@ Route.group(() => {
     usersRouter();
     coursesRouter();
     sectionsRouter();
+    videosRouter();
   }).prefix("v1");
 }).prefix("api");

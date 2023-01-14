@@ -1,124 +1,176 @@
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { randomUUID } from 'node:crypto'
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
-import Course from 'App/Models/Course'
-import Section from 'App/Models/Section'
-import Video from 'App/Models/Video'
+import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import { schema, rules } from "@ioc:Adonis/Core/Validator";
+import Section from "App/Models/Section";
+import Video from "App/Models/Video";
+import { nanoid } from "nanoid";
 
 export default class VideosController {
-  public async createVideo({ auth, params, request, response }: HttpContextContract) {
-    const course = await Course.find(params.course)
+  public async index({ params, response }: HttpContextContract) {
+    const section = await Section.query()
+      .preload("videos")
+      .where("id", params.section)
+      .first();
 
-    if (!course) {
-      return response.status(404).send({ message: 'Resource not found' })
+    if (!section) {
+      return response.notFound({ error: "Section not found" });
     }
 
-    if (course?.ownerId !== auth.user?.username) {
-      return response.status(401).send({ message: 'Unauthorized' })
-    }
+    // TODO check if use has the course
 
-    const newVideoSchema = schema.create({
-      name: schema.string([rules.minLength(6), rules.maxLength(40)]),
-      description: schema.string.optional([rules.maxLength(420)]),
-      section: schema.string([rules.minLength(12), rules.maxLength(12)]),
-    })
-
-    const payload = await request.validate({ schema: newVideoSchema })
-
-    const section = await Section.find(payload.section)
-
-    if (!section || section.courseId !== course.id) {
-      return response.status(404).send({ message: 'Resource not found' })
-    }
-
-    const video = new Video()
-    video.fill(payload)
-    await video.related('section').associate(section)
-
-    const videoUpload = request.file('video', {
-      size: '5gb',
-      extnames: ['mp4', 'webm', 'mkv', 'avi', 'gif'],
-    })
-
-    if (videoUpload) {
-      const filename = `${randomUUID().replace(/-/g, '')}.${videoUpload.extname}`
-
-      await videoUpload.moveToDisk('./', {
-        name: filename,
-      })
-
-      video.video = filename
-    }
-
-    await video.save()
-
-    return response.status(201).send(video)
+    return section.videos;
   }
 
-  public async findVideo({ params, response }: HttpContextContract) {
-    const course = await Course.find(params.course)
+  public async store({
+    auth: { user },
+    params,
+    request,
+    response,
+  }: HttpContextContract) {
+    const section = await Section.query()
+      .preload("course")
+      .where("id", params.section)
+      .first();
 
-    if (!course) {
-      return response.status(404).send({ message: 'Resource not found' })
+    if (!section) {
+      return response.status(404).send({ message: "Section not found" });
     }
 
-    const video = await Video.find(params.video)
+    if (section.course?.ownerId !== user?.username) {
+      return response.status(401).send({ message: "Unauthorized" });
+    }
+
+    const storeVideoSchema = schema.create({
+      name: schema.string([rules.minLength(6), rules.maxLength(100)]),
+      description: schema.string.optional([rules.maxLength(5000)]),
+    });
+
+    try {
+      const payload = await request.validate({ schema: storeVideoSchema });
+
+      const video = new Video();
+      video.fill(payload);
+      await video.related("section").associate(section);
+
+      return response.created(video);
+    } catch (error) {
+      return response.badRequest(error.messages);
+    }
+  }
+
+  public async show({ params: { id }, response }: HttpContextContract) {
+    const video = await Video.find(id);
 
     if (!video) {
-      return response.status(404).send({ message: 'Resource not found' })
+      return response.status(404).send({ error: "Video not found" });
     }
 
-    // TODO - check user if he has a course
-
-    await video.load('section')
-    await video.section.load('course')
-
-    if (video.section.courseId !== course.id) {
-      return response.status(404).send({ message: 'Resource not found' })
-    }
-
-    return video
+    return video;
   }
 
-  public async updateVideo({ auth, params, request, response }: HttpContextContract) {
-    const course = await Course.find(params.course)
-    const video = await Video.find(params.video)
+  public async update({
+    auth: { user },
+    params: { id },
+    request,
+    response,
+  }: HttpContextContract) {
+    const video = await Video.query()
+      .preload("section", (section) => section.preload("course"))
+      .where("id", id)
+      .first();
 
-    if (!course || !video) {
-      return response.status(404).send({ message: 'Resource not found' })
+    // Check if section exists
+    if (!video) {
+      return response.notFound({ error: "Video not found" });
     }
 
-    if (course?.ownerId !== auth.user?.username) {
-      return response.status(401).send({ message: 'Unauthorized' })
+    // Check if the authenticated user is the course owner
+    if (video.section.course?.ownerId !== user?.username) {
+      return response.unauthorized({ error: "Unauthorized" });
     }
 
-    const newVideoSchema = schema.create({
-      name: schema.string.optional([rules.minLength(6), rules.maxLength(40)]),
-      description: schema.string.optional([rules.maxLength(420)]),
-    })
+    const updateVideoSchema = schema.create({
+      name: schema.string([rules.minLength(6), rules.maxLength(100)]),
+      description: schema.string.optional([rules.maxLength(5000)]),
+    });
 
-    const payload = await request.validate({ schema: newVideoSchema })
-    video.merge(payload)
+    try {
+      const payload = await request.validate({ schema: updateVideoSchema });
 
-    await video.save()
+      await video.merge(payload).save();
 
-    return video
+      return response.ok(video);
+    } catch (error) {
+      return response.badRequest(error.messages);
+    }
   }
 
-  public async deleteVideo({ auth, params, response }: HttpContextContract) {
-    const course = await Course.find(params.course)
-    const video = await Video.find(params.video)
+  public async destroy({
+    auth: { user },
+    params: { id },
+    response,
+  }: HttpContextContract) {
+    const video = await Video.query()
+      .preload("section", (section) => section.preload("course"))
+      .where("id", id)
+      .first();
 
-    if (!course || !video) {
-      return response.status(404).send({ message: 'Resource not found' })
+    // Check if section exists
+    if (!video) {
+      return response.notFound({ error: "Video not found" });
     }
 
-    if (course?.ownerId !== auth.user?.username) {
-      return response.status(401).send({ message: 'Unauthorized' })
+    // Check if the authenticated user is the course owner
+    if (video.section.course?.ownerId !== user?.username) {
+      return response.unauthorized({ error: "Unauthorized" });
     }
 
-    await video.delete()
+    // Delete course
+    await video.delete();
 
-    return { message: 'Video deleted with success' }
+    return response.noContent();
+  }
+
+  public async upload({
+    auth: { user },
+    params: { id },
+    request,
+    response,
+  }: HttpContextContract) {
+    const video = await Video.query()
+      .preload("section", (section) => section.preload("course"))
+      .where("id", id)
+      .first();
+
+    // Check if section exists
+    if (!video) {
+      return response.notFound({ error: "Video not found" });
+    }
+
+    // Check if the authenticated user is the course owner
+    if (video.section.course?.ownerId !== user?.username) {
+      return response.unauthorized({ error: "Unauthorized" });
+    }
+
+    // Upload video
+    const videoUpload = request.file("video", {
+      size: "5gb",
+      extnames: ["mp4", "webm", "mkv", "avi", "gif"],
+    });
+
+    if (videoUpload?.isValid) {
+      const filename = `${nanoid()}.${videoUpload.extname}`;
+
+      await videoUpload.moveToDisk("./", {
+        name: filename,
+      });
+
+      video.video = filename;
+
+      await video.save();
+
+      return response.noContent();
+    }
+
+    return response.unsupportedMediaType({ error: "Unsupported Media" });
   }
 }

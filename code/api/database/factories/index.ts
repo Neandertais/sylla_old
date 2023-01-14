@@ -38,6 +38,7 @@ export const SectionFactory = Factory.define(Section, ({ faker }) => {
   };
 })
   .relation("course", () => CourseFactory)
+  .relation("videos", () => VideoFactory)
   .build();
 
 export const VideoFactory = Factory.define(Video, ({ faker }) => {
