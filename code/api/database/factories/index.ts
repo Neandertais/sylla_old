@@ -45,6 +45,7 @@ export const VideoFactory = Factory.define(Video, ({ faker }) => {
   return {
     name: faker.lorem.words(),
     description: faker.lorem.paragraph(),
+    position: parseInt(faker.random.numeric(2)),
   };
 })
   .relation("section", () => SectionFactory)

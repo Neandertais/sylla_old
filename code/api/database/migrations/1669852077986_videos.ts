@@ -11,6 +11,7 @@ export default class extends BaseSchema {
       table.string("video", 26);
       table.jsonb("qualities");
       table.integer("duration");
+      table.integer("position");
 
       table.string("section_id", 30).references("sections.id");
       table.timestamp("created_at", { useTz: true });

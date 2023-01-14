@@ -38,6 +38,9 @@ export default class Video extends BaseModel {
   public qualities: VideoQualities[];
 
   @column()
+  public position: number;
+
+  @column()
   public sectionId: string;
 
   @column.dateTime({ autoCreate: true })
