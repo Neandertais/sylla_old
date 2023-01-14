@@ -53,7 +53,7 @@ export default class CoursesController {
         extnames: ["jpg", "png", "webp"],
       });
 
-      if (thumbnail) {
+      if (thumbnail?.isValid) {
         const filename = `${nanoid()}.${thumbnail.extname}`;
 
         await thumbnail.moveToDisk("./", {
@@ -132,7 +132,7 @@ export default class CoursesController {
         extnames: ["jpg", "png", "webp"],
       });
 
-      if (thumbnail) {
+      if (thumbnail?.isValid) {
         const filename = `${nanoid()}.${thumbnail.extname}`;
 
         await thumbnail.moveToDisk("./", {

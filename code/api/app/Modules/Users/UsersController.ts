@@ -68,7 +68,7 @@ export default class UsersController {
         extnames: ["jpg", "png", "webp"],
       });
 
-      if (avatar) {
+      if (avatar?.isValid) {
         const filename = `${nanoid()}.${avatar.extname}`;
 
         await avatar.moveToDisk("./", {
