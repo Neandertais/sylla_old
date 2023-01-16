@@ -1,6 +1,8 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { schema, rules } from "@ioc:Adonis/Core/Validator";
+import Database from "@ioc:Adonis/Lucid/Database";
 import Course from "App/Models/Course";
+import Purchase from "App/Models/Purchase";
 import { nanoid } from "nanoid";
 
 export default class CoursesController {
@@ -174,5 +176,41 @@ export default class CoursesController {
     // TODO - remove thumbnail
 
     return response.noContent();
+  }
+
+  public async buy({
+    auth: { user },
+    params: { id },
+    response,
+  }: HttpContextContract) {
+    const course = await Course.find(id);
+
+    if (!course) {
+      return response.notFound({ error: "Course not found " });
+    }
+
+    if (course.price > user?.cash!) {
+      return response.badRequest({ error: "Insufficient money" });
+    }
+
+    const trx = await Database.transaction();
+
+    try {
+      user?.useTransaction(trx);
+
+      await user?.merge({ cash: user.cash - course.price }).save();
+      const purchase = await Purchase.create({
+        user_id: user?.username,
+        course_id: course.id,
+      });
+
+      await trx.commit();
+
+      return response.created(purchase);
+    } catch (error) {
+      await trx.rollback();
+
+      return response.internalServerError({ error: "Internal server error" });
+    }
   }
 }
