@@ -1,7 +1,12 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { schema, rules } from "@ioc:Adonis/Core/Validator";
+import { createReadStream } from "fs-extra";
+import Drive from "@ioc:Adonis/Core/Drive";
+import Config from "@ioc:Adonis/Core/Config";
+import Route from "@ioc:Adonis/Core/Route";
 import Section from "App/Models/Section";
 import Video from "App/Models/Video";
+import Purchase from "App/Models/Purchase";
 import { nanoid } from "nanoid";
 
 export default class VideosController {
@@ -254,5 +259,73 @@ export default class VideosController {
     } catch (error) {
       return response.badRequest(error.messages);
     }
+  }
+
+  public async watch({
+    auth: { user },
+    params: { id },
+    request,
+    response,
+  }: HttpContextContract) {
+    const video = await Video.find(id);
+
+    if (!video) {
+      return response.status(404).send({ error: "Video not found" });
+    }
+
+    // Handle stream when valid signature
+    if (request.hasValidSignature()) {
+      const { range } = request.headers();
+
+      if (!range) {
+        return response.badRequest({ error: "Requires Range header" });
+      }
+
+      const location = `${video.video}`;
+
+      const { size } = await Drive.getStats(location);
+
+      const CHUNK_SIZE = 10 ** 6; // 1MB
+
+      const start = Number(range.replace(/\D/g, ""));
+      const end = Math.min(start + CHUNK_SIZE, size - 1);
+      const contentLength = end - start + 1;
+
+      response.header("Content-Range", `bytes ${start}-${end}/${size}`);
+      response.header("Accept-Ranges", "bytes");
+      response.header("Content-Length", contentLength);
+      response.header("Content-Type", "video/mp4");
+
+      return response
+        .status(206)
+        .stream(
+          createReadStream(
+            `${Config.get("drive.disks.local.root")}/${location}`,
+            { start, end }
+          )
+        );
+    }
+
+    // Generate signed url
+    await video.load("section");
+    const purchase = Purchase.query()
+      .where("user_id", user?.username!)
+      .where("course_id", video.section.courseId);
+
+    if (!purchase) {
+      await video.section.load("course");
+
+      if (video.section.course.ownerId !== user?.username) {
+        return response.unauthorized({ error: "Unauthorized" });
+      }
+    }
+
+    const url = await Route.makeSignedUrl(
+      "videos.watch",
+      { id: video.id },
+      { expiresIn: "30m" }
+    );
+
+    return response.ok({ url });
   }
 }
