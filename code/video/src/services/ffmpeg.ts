@@ -24,7 +24,12 @@ export function extractImages(
     ffmpeg()
       .input(file)
       .addInputOptions(["-ss", startTime])
-      .addOutputOptions(["-t", duration, "-vf", "scale=540:-1"])
+      .addOutputOptions([
+        "-t",
+        duration,
+        "-vf",
+        "fps=10/1,scale=540:-1",
+      ])
       .output(output)
       .on("end", () => {
         resolve();
