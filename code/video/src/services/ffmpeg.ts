@@ -1,7 +1,8 @@
-import ffmpeg from "fluent-ffmpeg";
+import ffmpeg, { FfprobeData } from "fluent-ffmpeg";
+import path from "path";
 
 export function getMetadata(file: string) {
-  return new Promise<ffmpeg.FfprobeFormat>((resolve, reject) => {
+  return new Promise<FfprobeData>((resolve, reject) => {
     ffmpeg()
       .input(file)
       .ffprobe((err, data) => {
@@ -9,7 +10,7 @@ export function getMetadata(file: string) {
           return reject(err);
         }
 
-        return resolve(data.format);
+        return resolve(data);
       });
   });
 }
@@ -36,10 +37,16 @@ export function extractImages(
   });
 }
 
-export function resizeVideo(file: string, outDir: string) {
+export function resizeVideo(
+  filename: string,
+  originalSize: number,
+) {
   return new Promise<void>((resolve, reject) => {
-    ffmpeg()
-      .input(file)
+    const name = path.basename(filename, path.extname(filename));
+    const videosFolder = path.dirname(filename);
+
+    const command = ffmpeg()
+      .input(filename)
       .addInputOptions([
         "-hwaccel",
         "vaapi",
@@ -47,31 +54,53 @@ export function resizeVideo(file: string, outDir: string) {
         "vaapi",
         "-hwaccel_device",
         "/dev/dri/renderD128",
-      ])
-      .output(outDir + "/output_360.mp4")
-      .addOutputOptions([
-        "-vf",
-        "hwupload,fps=30/1,scale_vaapi=-1:360",
-        "-c:v",
-        "h264_vaapi",
-      ])
-      .output(outDir + "/output_480.mp4")
-      .addOutputOptions([
-        "-vf",
-        "hwupload,fps=30/1,scale_vaapi=-1:480",
-        "-c:v",
-        "h264_vaapi",
-      ])
-      .output(outDir + "/output_720.mp4")
-      .addOutputOptions([
-        "-vf",
-        "hwupload,fps=30/1,scale_vaapi=-1:720",
-        "-c:v",
-        "h264_vaapi",
-      ])
-      .on("start", function (commandLine) {
-        console.log("Spawned Ffmpeg with command: " + commandLine);
-      })
+      ]);
+
+    if (originalSize >= 360) {
+      command
+        .output(`${videosFolder}/${name}_360.mp4`)
+        .addOutputOptions([
+          "-vf",
+          "hwupload,fps=30/1,scale_vaapi=-1:360",
+          "-c:v",
+          "h264_vaapi",
+        ]);
+    }
+
+    if (originalSize >= 480) {
+      command
+        .output(`${videosFolder}/${name}_480.mp4`)
+        .addOutputOptions([
+          "-vf",
+          "hwupload,fps=30/1,scale_vaapi=-1:480",
+          "-c:v",
+          "h264_vaapi",
+        ]);
+    }
+
+    if (originalSize >= 720) {
+      command
+        .output(`${videosFolder}/${name}_720.mp4`)
+        .addOutputOptions([
+          "-vf",
+          "hwupload,fps=30/1,scale_vaapi=-1:720",
+          "-c:v",
+          "h264_vaapi",
+        ]);
+    }
+
+    if (originalSize >= 1080) {
+      command
+        .output(`${videosFolder}/${name}_1080.mp4`)
+        .addOutputOptions([
+          "-vf",
+          "hwupload,fps=30/1,scale_vaapi=-1:1080",
+          "-c:v",
+          "h264_vaapi",
+        ]);
+    }
+
+    command
       .on("end", () => {
         resolve();
       })
