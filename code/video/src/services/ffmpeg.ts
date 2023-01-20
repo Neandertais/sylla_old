@@ -1,7 +1,7 @@
 import ffmpeg from "fluent-ffmpeg";
 
 export function getMetadata(file: string) {
-  return new Promise((resolve, reject) => {
+  return new Promise<ffmpeg.FfprobeFormat>((resolve, reject) => {
     ffmpeg()
       .input(file)
       .ffprobe((err, data) => {
@@ -14,16 +14,24 @@ export function getMetadata(file: string) {
   });
 }
 
-export async function extractImages(
+export function extractImages(
   file: string,
   startTime: string,
   duration: string,
   output: string
 ) {
-  ffmpeg()
-    .input(file)
-    .addInputOptions(["-ss", startTime])
-    .addOutputOptions(["-t", duration, "-vf", "scale=640:-1"])
-    .output(output)
-    .run();
+  return new Promise<void>((resolve, reject) => {
+    ffmpeg()
+      .input(file)
+      .addInputOptions(["-ss", startTime])
+      .addOutputOptions(["-t", duration, "-vf", "scale=540:-1"])
+      .output(output)
+      .on("end", () => {
+        resolve();
+      })
+      .on("error", (err) => {
+        return reject(err);
+      })
+      .run();
+  });
 }
