@@ -20,6 +20,9 @@
     "@types/bull": "^4.10.0",
     "@types/fluent-ffmpeg": "^2.1.20",
     "@types/node": "^18.11.18",
+    "@typescript-eslint/eslint-plugin": "^5.48.2",
+    "@typescript-eslint/parser": "^5.48.2",
+    "eslint": "^8.32.0",
     "nodemon": "^2.0.20",
     "regenerator-runtime": "^0.13.11",
     "ts-node": "^10.9.1",
@@ -27,7 +30,7 @@
     "vitest": "^0.27.2"
   },
   "dependencies": {
-    "@tensorflow/tfjs-node": "^4.2.0",
+    "@tensorflow/tfjs-node": "^3.21.1",
     "bull": "^4.10.2",
     "fluent-ffmpeg": "^2.1.2",
     "nsfwjs": "^2.4.2"
