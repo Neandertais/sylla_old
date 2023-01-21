@@ -1,5 +1,8 @@
+import path from "node:path";
+import debug from "debug";
 import ffmpeg, { FfprobeData } from "fluent-ffmpeg";
-import path from "path";
+
+const videoDebug = debug("video:ffmpeg");
 
 export function getMetadata(file: string) {
   return new Promise<FfprobeData>((resolve, reject) => {
@@ -37,10 +40,7 @@ export function extractImages(
   });
 }
 
-export function resizeVideo(
-  filename: string,
-  originalSize: number,
-) {
+export function resizeVideo(filename: string, originalSize: number) {
   return new Promise<void>((resolve, reject) => {
     const name = path.basename(filename, path.extname(filename));
     const videosFolder = path.dirname(filename);
@@ -108,7 +108,12 @@ export function resizeVideo(
         return reject(err);
       })
       .on("progress", function (progress) {
-        console.log("Processing: " + progress.percent + "% done");
+        videoDebug(
+          "Resizing video: %s %",
+          Math.trunc(progress.percent) +
+            "." +
+            `${progress.percent}`.split(".")[1].slice(0, 2)
+        );
       })
       .run();
   });
