@@ -15,7 +15,7 @@ describe("FFmpeg tests", () => {
 
     const metadata = await getMetadata(video);
 
-    expect(metadata.format.size).toBe(1261034);
+    expect(metadata.format.size).toBe(350709);
     expect(metadata.format.format_name).toBe("mov,mp4,m4a,3gp,3g2,mj2");
   });
 

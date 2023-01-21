@@ -112,7 +112,7 @@ export function resizeVideo(filename: string, originalSize: number) {
           "Resizing video: %s %",
           Math.trunc(progress.percent) +
             "." +
-            `${progress.percent}`.split(".")[1].slice(0, 2)
+            `${progress.percent}`.split(".")[1]?.slice(0, 2)
         );
       })
       .run();
