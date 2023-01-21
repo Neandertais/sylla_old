@@ -17,15 +17,15 @@ export async function checkSexualContent(video: string) {
   const temporaryDir = resolve(`./tmp/${randomUUID()}`);
   const output = resolve(temporaryDir + "/%04d.bmp");
 
-  console.log(output);
-
-  const { duration } = await getMetadata(video);
+  const {
+    format: { duration },
+  } = await getMetadata(video);
 
   for (let time = 0; time < duration!; time = time + 10) {
     if (fs.existsSync(temporaryDir)) {
       fs.rmSync(temporaryDir, { recursive: true, force: true });
     }
-    fs.mkdirSync(temporaryDir);
+    fs.mkdirSync(temporaryDir, { recursive: true });
 
     await extractImages(video, time.toString(), "10", output);
 

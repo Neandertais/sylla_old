@@ -54,6 +54,11 @@ services:
       target: dependencies
     env_file:
       - .env
+    environment:
+      - REDIS_HOST=redis
+      - DEBUG=video:content
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
     volumes:
       - ../video:/home/node/app
       - ../video/node_modules:/home/node/app/node_modules

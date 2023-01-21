@@ -61,7 +61,7 @@ export function resizeVideo(
         .output(`${videosFolder}/${name}_360.mp4`)
         .addOutputOptions([
           "-vf",
-          "hwupload,fps=30/1,scale_vaapi=-1:360",
+          "fps=30/1,scale_vaapi=-1:360",
           "-c:v",
           "h264_vaapi",
         ]);
@@ -72,7 +72,7 @@ export function resizeVideo(
         .output(`${videosFolder}/${name}_480.mp4`)
         .addOutputOptions([
           "-vf",
-          "hwupload,fps=30/1,scale_vaapi=-1:480",
+          "fps=30/1,scale_vaapi=-1:480",
           "-c:v",
           "h264_vaapi",
         ]);
@@ -83,7 +83,7 @@ export function resizeVideo(
         .output(`${videosFolder}/${name}_720.mp4`)
         .addOutputOptions([
           "-vf",
-          "hwupload,fps=30/1,scale_vaapi=-1:720",
+          "fps=30/1,scale_vaapi=-1:720",
           "-c:v",
           "h264_vaapi",
         ]);
@@ -94,7 +94,7 @@ export function resizeVideo(
         .output(`${videosFolder}/${name}_1080.mp4`)
         .addOutputOptions([
           "-vf",
-          "hwupload,fps=30/1,scale_vaapi=-1:1080",
+          "fps=30/1,scale_vaapi=-1:1080",
           "-c:v",
           "h264_vaapi",
         ]);
