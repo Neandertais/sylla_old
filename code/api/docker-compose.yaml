@@ -62,7 +62,7 @@ services:
     volumes:
       - ../video:/home/node/app
       - ../video/node_modules:/home/node/app/node_modules
-    command: npm run dev
+    command: -- sh -c 'chmod 777 -R /dev/dri && exec npm run dev'
 
 volumes:
   postgres_volume:
