@@ -11,7 +11,7 @@ import { extractImages, getMetadata } from "./ffmpeg.js";
 tf.enableProdMode();
 const model = await nsfw.load();
 
-const videoDebugger = debug("video:content");
+const videDebug = debug("video:nsfw");
 
 export async function checkSexualContent(video: string) {
   const temporaryDir = resolve(`./tmp/${randomUUID()}`);
@@ -36,16 +36,17 @@ export async function checkSexualContent(video: string) {
     for (const file of files) {
       const content = fs.readFileSync(resolve(temporaryDir + "/" + file));
       const image = tf.node.decodeBmp(content);
-      const predications = await model.classify(image);
+      const predications = await model.classify(image, 3);
       image.dispose();
 
       currentFrame++;
 
-      videoDebugger(
-        "Time: %d, Current Frame: %d, Predications: %O",
-        time,
+      videDebug(
+        "Checking Sexual Content %s %, Current Frame: %d, Predication: %s - %s %",
+        ((currentFrame * 100) / (duration! * 100)).toString().slice(2, 4),
         currentFrame,
-        predications
+        predications[0].className,
+        predications[0].probability.toString().slice(2, 4)
       );
 
       const probabilities: number[] = [];
