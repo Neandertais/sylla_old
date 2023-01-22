@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { nanoid } from "nanoid";
 import {
   BaseModel,
   beforeCreate,
@@ -6,14 +7,22 @@ import {
   BelongsTo,
   column,
 } from "@ioc:Adonis/Lucid/Orm";
+
 import Section from "App/Models/Section";
-import { nanoid } from "nanoid";
 
 enum VideoQualities {
   "1080p",
   "720p",
   "480p",
   "360p",
+}
+
+export enum VideoStatus {
+  "unpublished",
+  "processing",
+  "error:has sexual content",
+  "error:internal error",
+  "published",
 }
 
 export default class Video extends BaseModel {
@@ -28,6 +37,9 @@ export default class Video extends BaseModel {
 
   @column()
   public video: string;
+
+  @column()
+  public status: VideoStatus;
 
   @column()
   public duration: string;
@@ -52,5 +64,10 @@ export default class Video extends BaseModel {
   @beforeCreate()
   public static async generateId(video: Video) {
     video.id = nanoid();
+  }
+
+  @beforeCreate()
+  public static async assignVideoStatus(video: Video) {
+    video.status = VideoStatus.unpublished;
   }
 }

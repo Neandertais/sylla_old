@@ -8,7 +8,8 @@ videoQueue.process(5, async (job, done) => {
 
     const hasSexualContent = await checkSexualContent(file);
     if (hasSexualContent) {
-      return done(new Error("Video has sexual content"));
+      done(new Error("Video has sexual content"));
+      return;
     }
 
     job.progress(50);
@@ -17,8 +18,8 @@ videoQueue.process(5, async (job, done) => {
 
     await resizeVideo(file, metadata.streams[0].height!);
 
-    return done();
+    done();
   } catch (error) {
-    return done(new Error("Processing failure"));
+    done(new Error("Processing failure"));
   }
 });

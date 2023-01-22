@@ -1,13 +1,17 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
-import { schema, rules } from "@ioc:Adonis/Core/Validator";
 import { createReadStream } from "fs-extra";
+import { nanoid } from "nanoid";
+
+import { schema, rules } from "@ioc:Adonis/Core/Validator";
 import Drive from "@ioc:Adonis/Core/Drive";
 import Config from "@ioc:Adonis/Core/Config";
 import Route from "@ioc:Adonis/Core/Route";
+
 import Section from "App/Models/Section";
-import Video from "App/Models/Video";
+import Video, { VideoStatus } from "App/Models/Video";
 import Purchase from "App/Models/Purchase";
-import { nanoid } from "nanoid";
+
+import { videoProcessing } from "App/Services/Queue";
 
 export default class VideosController {
   public async index({ params, response }: HttpContextContract) {
@@ -53,7 +57,7 @@ export default class VideosController {
       const payload = await request.validate({ schema: storeVideoSchema });
 
       const video = new Video();
-      video.fill(payload);
+      video.fill({ ...payload, status: VideoStatus.unpublished });
       await video.related("section").associate(section);
 
       return response.created(video);
@@ -156,6 +160,10 @@ export default class VideosController {
       return response.unauthorized({ error: "Unauthorized" });
     }
 
+    if (video.video) {
+      return response.notAcceptable({ error: "The video has been uploaded" });
+    }
+
     // Upload video
     const videoUpload = request.file("video", {
       size: "5gb",
@@ -170,6 +178,9 @@ export default class VideosController {
       });
 
       video.video = filename;
+
+      await videoProcessing.add({ id: video.id, file: videoUpload.filePath });
+      video.status = VideoStatus.processing;
 
       await video.save();
 

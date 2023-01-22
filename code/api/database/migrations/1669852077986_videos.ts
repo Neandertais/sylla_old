@@ -9,6 +9,7 @@ export default class extends BaseSchema {
       table.string("name", 100);
       table.string("description", 5000);
       table.string("video", 26);
+      table.integer("status");
       table.jsonb("qualities");
       table.integer("duration");
       table.integer("position");
