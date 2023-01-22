@@ -24,7 +24,7 @@ export function extractImages(
   duration: string,
   output: string
 ) {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void | Error>((resolve, reject) => {
     ffmpeg()
       .input(file)
       .addInputOptions(["-ss", startTime])
@@ -41,7 +41,7 @@ export function extractImages(
 }
 
 export function resizeVideo(filename: string, originalSize: number) {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void | Error>((resolve, reject) => {
     const name = path.basename(filename, path.extname(filename));
     const videosFolder = path.dirname(filename);
 
