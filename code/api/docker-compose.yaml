@@ -42,7 +42,8 @@ services:
     volumes:
       - ./:/home/node/app
       - ./node_modules:/home/node/app/node_modules
-    command: dumb-init node ace serve --watch --node-args="--inspect=0.0.0.0"
+      - uploads_volume:/home/node/app/tmp/uploads
+    command: node ace serve --watch --node-args="--inspect=0.0.0.0"
 
   video_processing:
     container_name: video_processing
@@ -56,14 +57,16 @@ services:
       - .env
     environment:
       - REDIS_HOST=redis
-      - DEBUG=video:content
+      - DEBUG=video:*
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
     volumes:
       - ../video:/home/node/app
       - ../video/node_modules:/home/node/app/node_modules
+      - uploads_volume:/home/node/app/tmp/uploads
     command: -- sh -c 'chmod 777 -R /dev/dri && exec npm run dev'
 
 volumes:
   postgres_volume:
   redis_volume:
+  uploads_volume:
