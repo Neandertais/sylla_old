@@ -41,9 +41,11 @@ export function extractImages(
 }
 
 export function resizeVideo(filename: string, originalSize: number) {
-  return new Promise<void | Error>((resolve, reject) => {
+  return new Promise<string[] | Error>((resolve, reject) => {
     const name = path.basename(filename, path.extname(filename));
     const videosFolder = path.dirname(filename);
+
+    const qualities: string[] = [];
 
     const command = ffmpeg()
       .input(filename)
@@ -65,6 +67,8 @@ export function resizeVideo(filename: string, originalSize: number) {
           "-c:v",
           "h264_vaapi",
         ]);
+
+      qualities.push("360p");
     }
 
     if (originalSize >= 480) {
@@ -76,6 +80,8 @@ export function resizeVideo(filename: string, originalSize: number) {
           "-c:v",
           "h264_vaapi",
         ]);
+
+      qualities.push("480p");
     }
 
     if (originalSize >= 720) {
@@ -87,6 +93,8 @@ export function resizeVideo(filename: string, originalSize: number) {
           "-c:v",
           "h264_vaapi",
         ]);
+
+      qualities.push("720p");
     }
 
     if (originalSize >= 1080) {
@@ -98,11 +106,13 @@ export function resizeVideo(filename: string, originalSize: number) {
           "-c:v",
           "h264_vaapi",
         ]);
+
+      qualities.push("1080p");
     }
 
     command
       .on("end", () => {
-        resolve();
+        resolve(qualities);
       })
       .on("error", (err) => {
         return reject(err);

@@ -16,9 +16,12 @@ videoQueue.process(5, async (job, done) => {
 
     const metadata = await getMetadata(file);
 
-    await resizeVideo(file, metadata.streams[0].height!);
+    const qualities = await resizeVideo(file, metadata.streams[0].height!);
 
-    done();
+    done(null, {
+      qualities,
+      duration: Math.floor(Number(metadata.streams[0].duration)),
+    });
   } catch (error) {
     done(new Error("Processing failure"));
   }

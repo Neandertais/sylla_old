@@ -1,3 +1,4 @@
+import Env from "@ioc:Adonis/Core/Env";
 import Queue from "bull";
 import Config from "@ioc:Adonis/Core/Config";
 import Video, { VideoStatus } from "App/Models/Video";
@@ -12,22 +13,31 @@ export const videoProcessing = new Queue("video-processing", {
   },
 });
 
-videoProcessing.on("global:completed", async (jobID) => {
-  const job = await videoProcessing.getJob(jobID);
-  const video = await Video.find(job!.data.id);
+if (Env.get("NODE_ENV") !== "test") {
+  videoProcessing.on("global:completed", async (jobID, result) => {
+    const job = await videoProcessing.getJob(jobID);
+    const video = await Video.find(job!.data.id);
 
-  video!.status = VideoStatus.published;
-  await video?.save();
-});
+    const { duration, qualities } = JSON.parse(result);
 
-videoProcessing.on("global:failed", async (jobID, err) => {
-  const job = await videoProcessing.getJob(jobID);
-  const video = await Video.find(job!.data.id);
+    video!.merge({
+      duration,
+      qualities,
+      status: VideoStatus.published,
+    });
 
-  if (err.message === "Video has sexual content") {
-    video!.status = VideoStatus["error:has sexual content"];
-  }
+    await video!.save();
+  });
 
-  video!.status = VideoStatus["error:internal error"];
-  await video?.save();
-});
+  videoProcessing.on("global:failed", async (jobID, err) => {
+    const job = await videoProcessing.getJob(jobID);
+    const video = await Video.find(job!.data.id);
+
+    if (err.message === "Video has sexual content") {
+      video!.status = VideoStatus["error:has sexual content"];
+    }
+
+    video!.status = VideoStatus["error:internal error"];
+    await video?.save();
+  });
+}
