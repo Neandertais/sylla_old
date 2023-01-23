@@ -21,6 +21,8 @@ export async function checkSexualContent(video: string) {
     format: { duration },
   } = await getMetadata(video);
 
+  let currentFrame = 0;
+
   for (let time = 0; time < duration!; time = time + 10) {
     if (fs.existsSync(temporaryDir)) {
       fs.rmSync(temporaryDir, { recursive: true, force: true });
@@ -30,8 +32,6 @@ export async function checkSexualContent(video: string) {
     await extractImages(video, time.toString(), "10", output);
 
     const files = fs.readdirSync(temporaryDir);
-
-    let currentFrame = 0;
 
     for (const file of files) {
       const content = fs.readFileSync(resolve(temporaryDir + "/" + file));
@@ -43,7 +43,7 @@ export async function checkSexualContent(video: string) {
 
       videDebug(
         "Checking Sexual Content %s %, Current Frame: %d, Predication: %s - %s %",
-        ((currentFrame * 100) / (duration! * 100)).toString().slice(2, 4),
+        Math.trunc(((currentFrame * 10 * 100) / (duration! * 100))),
         currentFrame,
         predications[0].className,
         predications[0].probability.toString().slice(2, 4)
