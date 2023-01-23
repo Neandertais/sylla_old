@@ -56,8 +56,16 @@ export default class VideosController {
     try {
       const payload = await request.validate({ schema: storeVideoSchema });
 
+      // New section with position +1 than last section
+      const lastVideo = await Video.query()
+        .max("position", "position")
+        .where("sectionId", section.id)
+        .first();
+
+      const position = lastVideo ? lastVideo.position + 1 : 1;
+
       const video = new Video();
-      video.fill({ ...payload, status: VideoStatus.unpublished });
+      video.fill({ ...payload, position, status: VideoStatus.unpublished });
       await video.related("section").associate(section);
 
       return response.created(video);
