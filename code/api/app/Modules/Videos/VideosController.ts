@@ -306,6 +306,12 @@ export default class VideosController {
         return response.partialContent({ error: "Quality not defined" });
       }
 
+      const qualities = ["360", "480", "720"];
+
+      if (!qualities.includes(quality)) {
+        return response.badRequest({ error: "Requires valid quality" });
+      }
+
       const location = `${video.video.split(".")[0]}_${quality}.mp4`;
 
       const { size } = await Drive.getStats(location);
