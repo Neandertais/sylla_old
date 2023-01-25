@@ -300,7 +300,13 @@ export default class VideosController {
         return response.badRequest({ error: "Requires Range header" });
       }
 
-      const location = `${video.video}`;
+      const quality = request.qs()["0"];
+
+      if (!quality) {
+        return response.partialContent({ error: "Quality not defined" });
+      }
+
+      const location = `${video.video.split(".")[0]}_${quality}.mp4`;
 
       const { size } = await Drive.getStats(location);
 
@@ -325,6 +331,12 @@ export default class VideosController {
         );
     }
 
+    const { quality } = request.qs();
+
+    if (!quality) {
+      return response.partialContent({ error: "Quality not defined" });
+    }
+
     // Generate signed url
     await video.load("section");
     const purchase = Purchase.query()
@@ -341,7 +353,7 @@ export default class VideosController {
 
     const url = await Route.makeSignedUrl(
       "videos.watch",
-      { id: video.id },
+      { id, qs: ["360"] },
       { expiresIn: "30m" }
     );
 
