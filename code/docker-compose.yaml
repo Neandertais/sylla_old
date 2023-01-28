@@ -22,6 +22,14 @@ services:
     ports:
       - 6379:6379
 
+  mellisearch:
+    container_name: melliseach
+    image: getmeili/meilisearch:v0.30
+    volumes:
+      - mellisearch_volume:/meili_data
+    ports: 
+      - 7700:7700
+
   adonis_app:
     container_name: adonis_app
     restart: always
@@ -29,7 +37,7 @@ services:
       - postgres
       - redis
     build:
-      context: .
+      context: ./api
       target: dependencies
     ports:
       - ${PORT}:${PORT}
@@ -40,8 +48,8 @@ services:
       - PG_HOST=postgres
       - REDIS_HOST=redis
     volumes:
-      - ./:/home/node/app
-      - ./node_modules:/home/node/app/node_modules
+      - ./api:/home/node/app
+      - ./api/node_modules:/home/node/app/node_modules
       - uploads_volume:/home/node/app/tmp/uploads
     command: node ace serve --watch --node-args="--inspect=0.0.0.0"
 
@@ -51,7 +59,7 @@ services:
     depends_on:
       - redis
     build:
-      context: ../video
+      context: ./video
       target: dependencies
     env_file:
       - .env
@@ -61,12 +69,13 @@ services:
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
     volumes:
-      - ../video:/home/node/app
-      - ../video/node_modules:/home/node/app/node_modules
+      - ./video:/home/node/app
+      - ./video/node_modules:/home/node/app/node_modules
       - uploads_volume:/home/node/app/tmp/uploads
     command: -- sh -c 'chmod 777 -R /dev/dri && exec npm run dev'
 
 volumes:
   postgres_volume:
   redis_volume:
+  mellisearch_volume:
   uploads_volume:
