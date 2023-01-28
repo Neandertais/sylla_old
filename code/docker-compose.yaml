@@ -5,7 +5,7 @@ services:
     container_name: postgres
     image: postgres:15-alpine
     volumes:
-      - ./scripts/postgresql:/docker-entrypoint-initdb.d
+      - ./api/scripts/postgresql:/docker-entrypoint-initdb.d
       - postgres_volume:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${PG_USER}
@@ -38,7 +38,7 @@ services:
       - redis
     build:
       context: ./api
-      target: dependencies
+      target: runner
     ports:
       - ${PORT}:${PORT}
       - 9229:9229
@@ -48,10 +48,9 @@ services:
       - PG_HOST=postgres
       - REDIS_HOST=redis
     volumes:
-      - ./api:/home/node/app
-      - ./api/node_modules:/home/node/app/node_modules
-      - uploads_volume:/home/node/app/tmp/uploads
-    command: node ace serve --watch --node-args="--inspect=0.0.0.0"
+      - ./api:/app
+      - uploads_volume:/app/tmp/uploads
+    command: yarn yarn install --frozen-lockfile && exec node ace serve --watch --node-args="--inspect=0.0.0.0"
 
   video_processing:
     container_name: video_processing
