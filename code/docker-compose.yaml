@@ -45,12 +45,14 @@ services:
     env_file:
       - .env
     environment:
+      - NODE_ENV=development
       - PG_HOST=postgres
       - REDIS_HOST=redis
+      - MEILISEARCH_HOST=http://meiliseach:7700
     volumes:
       - ./api:/app
       - uploads_volume:/app/tmp/uploads
-    command: yarn yarn install --frozen-lockfile && exec node ace serve --watch --node-args="--inspect=0.0.0.0"
+    command: sh -c 'yarn install && exec node ace serve --watch --node-args="--inspect=0.0.0.0"'
 
   video_processing:
     container_name: video_processing

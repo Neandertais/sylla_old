@@ -33,4 +33,6 @@ export default Env.rules({
   REDIS_HOST: Env.schema.string({ format: "host" }),
   REDIS_PORT: Env.schema.number(),
   REDIS_PASSWORD: Env.schema.string.optional(),
+
+  MEILISEARCH_HOST: Env.schema.string(),
 });
