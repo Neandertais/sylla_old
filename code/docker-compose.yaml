@@ -22,8 +22,8 @@ services:
     ports:
       - 6379:6379
 
-  mellisearch:
-    container_name: melliseach
+  meilisearch:
+    container_name: meiliseach
     image: getmeili/meilisearch:v0.30
     volumes:
       - mellisearch_volume:/meili_data
