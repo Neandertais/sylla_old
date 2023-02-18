@@ -6,7 +6,7 @@
     "dev": "node ace serve --watch",
     "build": "node ace build --production",
     "start": "node server.js",
-    "lint": "eslint . --ext=.ts",
+    "lint": "eslint . --ext=.ts --fix",
     "format": "prettier --write .",
     "test": "node ace test",
     "testWatch": "node ace test -w",
@@ -16,28 +16,6 @@
     "dockerAttachRedis": "docker exec -it redis /bin/sh",
     "dockerAttachPostgres": "docker exec -it postgres /bin/sh"
   },
-  "eslintConfig": {
-    "extends": [
-      "plugin:adonis/typescriptApp",
-      "prettier"
-    ],
-    "plugins": [
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        "error"
-      ]
-    }
-  },
-  "eslintIgnore": [
-    "build"
-  ],
-  "prettier": {
-    "trailingComma": "es5",
-    "semi": true,
-    "singleQuote": false
-  },
   "devDependencies": {
     "@adonisjs/assembler": "^5.9.5",
     "@japa/preset-adonis": "^1.2.0",
@@ -45,10 +23,13 @@
     "@types/bull": "^4.10.0",
     "@types/proxy-addr": "^2.0.0",
     "@types/source-map-support": "^0.5.6",
+    "@typescript-eslint/parser": "^5.52.0",
     "adonis-preset-ts": "^2.1.0",
     "eslint": "^8.28.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-typescript": "^3.5.3",
     "eslint-plugin-adonis": "^2.1.1",
+    "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
     "pino-pretty": "^9.1.1",
     "prettier": "^2.7.1",

@@ -1,4 +1,3 @@
-import type { Config } from "@japa/runner";
 import TestUtils from "@ioc:Adonis/Core/TestUtils";
 import {
   assert,
@@ -6,6 +5,7 @@ import {
   specReporter,
   apiClient,
 } from "@japa/preset-adonis";
+import type { Config } from "@japa/runner";
 
 export const plugins: Required<Config>["plugins"] = [
   assert(),

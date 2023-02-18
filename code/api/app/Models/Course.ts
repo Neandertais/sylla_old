@@ -6,8 +6,9 @@ import {
   belongsTo,
   column,
 } from "@ioc:Adonis/Lucid/Orm";
-import User from "App/Models/User";
 import { nanoid } from "nanoid";
+
+import User from "App/Models/User";
 
 export default class Course extends BaseModel {
   @column({ isPrimary: true })

@@ -1,11 +1,11 @@
-import { DateTime } from "luxon";
+import Hash from "@ioc:Adonis/Core/Hash";
 import {
   BaseModel,
   beforeCreate,
   beforeSave,
   column,
 } from "@ioc:Adonis/Lucid/Orm";
-import Hash from "@ioc:Adonis/Core/Hash";
+import { DateTime } from "luxon";
 
 export enum Platforms {
   Website = "Website",

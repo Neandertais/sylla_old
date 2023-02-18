@@ -1,7 +1,8 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import { schema, rules } from "@ioc:Adonis/Core/Validator";
-import User, { Platforms } from "App/Models/User";
 import { nanoid } from "nanoid";
+
+import User, { Platforms } from "App/Models/User";
 
 export default class UsersController {
   public async show({ params: { username }, response }: HttpContextContract) {

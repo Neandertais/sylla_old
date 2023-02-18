@@ -1,7 +1,8 @@
-import Database from "@ioc:Adonis/Lucid/Database";
 import Drive from "@ioc:Adonis/Core/Drive";
 import { file } from "@ioc:Adonis/Core/Helpers";
+import Database from "@ioc:Adonis/Lucid/Database";
 import { test } from "@japa/runner";
+
 import { CourseFactory, UserFactory } from "Database/factories";
 
 test.group("Courses update", (group) => {

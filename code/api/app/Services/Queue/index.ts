@@ -1,11 +1,12 @@
-import Env from "@ioc:Adonis/Core/Env";
-import Queue from "bull";
 import Config from "@ioc:Adonis/Core/Config";
+import Env from "@ioc:Adonis/Core/Env";
+import Bull from "bull";
+
 import Video, { VideoStatus } from "App/Models/Video";
 
 const config = Config.get("redis.connections.local");
 
-export const videoProcessing = new Queue("video-processing", {
+export const videoProcessing = new Bull("video-processing", {
   redis: {
     port: config.port,
     host: config.host,

@@ -1,5 +1,3 @@
-import { DateTime } from "luxon";
-import { nanoid } from "nanoid";
 import {
   BaseModel,
   beforeCreate,
@@ -7,6 +5,8 @@ import {
   BelongsTo,
   column,
 } from "@ioc:Adonis/Lucid/Orm";
+import { DateTime } from "luxon";
+import { nanoid } from "nanoid";
 
 import Section from "App/Models/Section";
 

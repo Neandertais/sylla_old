@@ -1,16 +1,14 @@
+import Config from "@ioc:Adonis/Core/Config";
+import Drive from "@ioc:Adonis/Core/Drive";
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import Route from "@ioc:Adonis/Core/Route";
+import { schema, rules } from "@ioc:Adonis/Core/Validator";
 import { createReadStream } from "fs-extra";
 import { nanoid } from "nanoid";
 
-import { schema, rules } from "@ioc:Adonis/Core/Validator";
-import Drive from "@ioc:Adonis/Core/Drive";
-import Config from "@ioc:Adonis/Core/Config";
-import Route from "@ioc:Adonis/Core/Route";
-
+import Purchase from "App/Models/Purchase";
 import Section from "App/Models/Section";
 import Video, { VideoStatus } from "App/Models/Video";
-import Purchase from "App/Models/Purchase";
-
 import { videoProcessing } from "App/Services/Queue";
 
 export default class VideosController {

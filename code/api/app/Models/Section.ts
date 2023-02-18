@@ -7,9 +7,10 @@ import {
   HasMany,
   hasMany,
 } from "@ioc:Adonis/Lucid/Orm";
+import { nanoid } from "nanoid";
+
 import Course from "App/Models/Course";
 import Video from "App/Models/Video";
-import { nanoid } from "nanoid";
 
 export default class Section extends BaseModel {
   @column({ isPrimary: true })

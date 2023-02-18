@@ -15,7 +15,6 @@
 process.env.NODE_ENV = "test";
 
 import "reflect-metadata";
-import sourceMapSupport from "source-map-support";
 import { Ignitor } from "@adonisjs/core/build/standalone";
 import {
   configure,
@@ -23,6 +22,7 @@ import {
   run,
   RunnerHooksHandler,
 } from "@japa/runner";
+import sourceMapSupport from "source-map-support";
 
 sourceMapSupport.install({ handleUncaughtExceptions: false });
 

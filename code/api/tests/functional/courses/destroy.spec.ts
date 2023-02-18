@@ -1,5 +1,6 @@
 import Database from "@ioc:Adonis/Lucid/Database";
 import { test } from "@japa/runner";
+
 import { CourseFactory, UserFactory } from "Database/factories";
 
 test.group("Courses destroy", (group) => {
