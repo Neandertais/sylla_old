@@ -14,10 +14,13 @@
     "docker:testWatch": "docker exec -it adonis_app node ace test -w",
     "dockerAttach": "docker exec -it adonis_app /bin/sh",
     "dockerAttachRedis": "docker exec -it redis /bin/sh",
-    "dockerAttachPostgres": "docker exec -it postgres /bin/sh"
+    "dockerAttachPostgres": "docker exec -it postgres /bin/sh",
+    "postinstall": "cd ../../ && husky install code/api/.husky"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.9.5",
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-conventional": "^17.4.4",
     "@japa/preset-adonis": "^1.2.0",
     "@japa/runner": "^2.2.2",
     "@types/bull": "^4.10.0",
@@ -31,6 +34,7 @@
     "eslint-plugin-adonis": "^2.1.1",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.3",
     "pino-pretty": "^9.1.1",
     "prettier": "^2.7.1",
     "typescript": "~4.6",
