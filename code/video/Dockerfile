@@ -1,27 +1,36 @@
 ARG NODE_IMAGE=node:18-buster-slim
 
-FROM $NODE_IMAGE AS base
-RUN apt-get update -y && \
-    apt-get install -y --no-install-recommends tini ffmpeg mesa-va-drivers && \
-    rm -rf /var/lib/apt/lists/* && \
-    mkdir -p /home/node/app
-WORKDIR /home/node/app
-ENTRYPOINT [ "tini" ]
+FROM $NODE_IMAGE AS deps
+WORKDIR /app
 
-FROM base AS dependencies
-COPY ./package*.json ./
-RUN npm ci
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+
+FROM $NODE_IMAGE AS builder
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-FROM dependencies AS build
-RUN npm run build
+RUN yarn build
 
-FROM base AS production
-ENV NODE_ENV=production
-ENV PORT=$PORT
-ENV HOST=0.0.0.0
-COPY ./package*.json ./
-RUN npm ci --production
-COPY --from=dist /home/node/app/dist .
+FROM $NODE_IMAGE AS runner
+RUN apt-get update -y && \
+    apt-get install -y --no-install-recommends tini ffmpeg mesa-va-drivers && \
+    rm -rf /var/lib/apt/lists/*
+ENTRYPOINT [ "tini" ]
+
+WORKDIR /app
+
+ENV NODE_ENV production
+ENV PORT $PORT
+ENV HOST 0.0.0.0
+
+COPY --from=deps /app/package.json /app/yarn.lock ./
+COPY --from=builder /app/dist .
+
+RUN yarn install --production --frozen-lockfile
+
 EXPOSE $PORT
-CMD [ "dumb-init", "node", "dist", "index.js" ]
+
+CMD [ "node", "index.js" ]

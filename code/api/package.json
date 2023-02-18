@@ -15,7 +15,7 @@
     "dockerAttach": "docker exec -it adonis_app /bin/sh",
     "dockerAttachRedis": "docker exec -it redis /bin/sh",
     "dockerAttachPostgres": "docker exec -it postgres /bin/sh",
-    "postinstall": "cd ../../ && husky install code/api/.husky"
+    "prepare": "cd ../../ && husky install code/api/.husky"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.9.5",

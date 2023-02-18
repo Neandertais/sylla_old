@@ -61,19 +61,20 @@ services:
       - redis
     build:
       context: ./video
-      target: dependencies
+      target: runner
     env_file:
       - .env
     environment:
+      - NODE_ENV=development
       - REDIS_HOST=redis
       - DEBUG=video:*
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
     volumes:
-      - ./video:/home/node/app
-      - ./video/node_modules:/home/node/app/node_modules
-      - uploads_volume:/home/node/app/tmp/uploads
-    command: -- sh -c 'chmod 777 -R /dev/dri && exec npm run dev'
+      - ./video:/app
+      - ./video/node_modules:/app/node_modules
+      - uploads_volume:/app/tmp/uploads
+    command: -- sh -c 'chmod 777 -R /dev/dri && yarn install && exec yarn dev'
 
 volumes:
   postgres_volume:
