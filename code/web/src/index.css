@@ -29,9 +29,12 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+a {
   font-size: inherit;
   font-weight: inherit;
+  color: inherit;
+  text-decoration: none;
 }
 
 ol,
@@ -47,4 +50,14 @@ ul {
   border-width: 0;
   border-style: solid;
   border-color: theme('borderColor.DEFAULT', currentColor);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* For IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }

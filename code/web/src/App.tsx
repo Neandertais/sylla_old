@@ -1,7 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ConfigProvider, App as AppAntd } from "antd";
+
+import Home from "./routes/Home";
 import SignUp from "./routes/SignUp";
 import SignIn from "./routes/SignIn";
-import Home from "./routes/Home";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +22,10 @@ const router = createBrowserRouter([
 
 export default function App() {
   return (
-    <RouterProvider router={router} />
-    )
+    <ConfigProvider>
+      <AppAntd>
+        <RouterProvider router={router} />
+      </AppAntd>
+    </ConfigProvider>
+  )
 } 

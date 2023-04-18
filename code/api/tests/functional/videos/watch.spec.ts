@@ -32,6 +32,6 @@ test.group("Videos watch", (group) => {
 
     fakeDrive.restore("local");
 
-    response.assertStatus(200);
+    response.assertStatus(206);
   });
 });
