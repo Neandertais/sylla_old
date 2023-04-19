@@ -6,7 +6,7 @@ export default function Header() {
     return (
         <div>
             <header className="shadow-md">
-                <div className="flex relative items-center justify-between px-8 py-2 max-w-7xl mx-auto">
+                <div className="flex relative items-center justify-between px-8 py-2 max-w-7xl mx-auto z-10">
                     <h1 className="font-bold font-base">SYLLA</h1>
                     <Input.Search className="absolute left-1/2 -translate-x-1/2 w-80" />
                     <div className="flex gap-6">

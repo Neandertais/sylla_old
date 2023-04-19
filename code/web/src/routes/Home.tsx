@@ -7,6 +7,7 @@ export default function Home() {
         <main>
             <Header />
             <CourseList />
+            <CourseList />
         </main>
     )
 }
