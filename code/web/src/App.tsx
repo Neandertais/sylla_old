@@ -1,6 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ConfigProvider, App as AppAntd } from "antd";
 
+import AuthProvider from "./contexts/Authentication";
+
 import Home from "./routes/Home";
 import SignUp from "./routes/SignUp";
 import SignIn from "./routes/SignIn";
@@ -17,15 +19,17 @@ const router = createBrowserRouter([
   {
     path: "/signin",
     element: <SignIn />,
-  }
+  },
 ]);
 
 export default function App() {
   return (
     <ConfigProvider>
       <AppAntd>
-        <RouterProvider router={router} />
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
       </AppAntd>
     </ConfigProvider>
-  )
-} 
+  );
+}
