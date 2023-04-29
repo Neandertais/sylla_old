@@ -6,6 +6,8 @@ import AuthProvider from "./contexts/Authentication";
 import Home from "./routes/Home";
 import SignUp from "./routes/SignUp";
 import SignIn from "./routes/SignIn";
+import ShowProfile from "./routes/ShowProfile";
+import EditProfile from "./routes/EditProfile";
 
 const router = createBrowserRouter([
   {
@@ -20,7 +22,16 @@ const router = createBrowserRouter([
     path: "/signin",
     element: <SignIn />,
   },
-]);
+  {
+    path: "/showprofile",
+    element: <ShowProfile/>
+  },
+  {
+    path: "/editprofile",
+    element: <EditProfile/>
+  }
+ 
+])
 
 export default function App() {
   return (
