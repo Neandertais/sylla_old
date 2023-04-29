@@ -18,8 +18,8 @@ export default function Header() {
                                 <Avatar className="cursor-pointer" />
                             </summary>
                             <div className="flex flex-col gap-3 py-3 absolute bg-white shadow-md border w-44 right-4 top-14 rounded-md">
-                                <Link className="px-4" to="" >Visualizar Perfil</Link>
-                                <Link className="px-4" to="" >Editar Perfil</Link>
+                                <Link className="px-4" to="/ShowProfile" >Visualizar Perfil</Link>
+                                <Link className="px-4" to="/EditProfile" >Editar Perfil</Link>
                                 <div className="border border-t-0 w-full" />
                                 <Link className="px-4" to="" >Sair</Link>
                             </div>
