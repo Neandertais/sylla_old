@@ -1,18 +1,48 @@
-import { AiOutlineBell } from "react-icons/ai";
 import { Avatar, Badge, Input } from "antd";
 import { Link } from "react-router-dom";
+
 import { useAuth } from "src/contexts/Authentication";
+
+import { AiOutlineBell, AiOutlineSearch } from "react-icons/ai";
+import { BiArrowBack } from "react-icons/bi";
+import { useRef } from "react";
 
 export default function Header() {
   const { user } = useAuth();
+  const searchMenu = useRef<HTMLDetailsElement>(null);
+
+  function handleCloseSearchMenu() {
+    if (!searchMenu.current) return;
+    searchMenu.current.open = false;
+  }
 
   return (
     <div>
       <header className="shadow-md">
-        <div className="flex relative items-center justify-between px-8 py-3 max-w-7xl mx-auto z-10">
-          <h1 className="font-bold font-base text-xl">SYLLA</h1>
-          <Input.Search className="absolute left-1/2 -translate-x-1/2 w-80" />
-          <div className="flex gap-6">
+        <div className="flex relative items-center justify-between px-5 py-3 max-w-7xl mx-auto z-10 sm:px-8">
+          <Link to="/" className="hover:text-black">
+            <h1 className="font-bold font-base text-xl">SYLLA</h1>
+          </Link>
+          <Input.Search className="absolute left-1/2 -translate-x-1/2 w-2/5 max-w-80 hidden sm:block" />
+          <div className="flex items-center gap-3 sm:gap-6">
+            <details ref={searchMenu} className="group sm:hidden">
+              <summary className="flex items-center list-none group-open:before:content-[''] group-open:before:fixed group-open:before:bottom-0 group-open:before:right-0 group-open:before:top-0 group-open:before:left-0">
+                <AiOutlineSearch size={20} />
+              </summary>
+              <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-full px-4">
+                <Input.Search
+                  addonBefore={
+                    <div
+                      onClick={handleCloseSearchMenu}
+                      className="flex items-center"
+                    >
+                      <BiArrowBack />
+                    </div>
+                  }
+                  className="bg-white"
+                />
+              </div>
+            </details>
             {user ? (
               <>
                 <Badge
@@ -39,14 +69,20 @@ export default function Header() {
                       Sair
                     </Link>
                   </div>
-                </details>{" "}
+                </details>
               </>
             ) : (
               <>
-                <Link className="font-bold text-gray-800 hover:text-gray-400" to="/signup">
+                <Link
+                  className="font-bold text-gray-800 hover:text-gray-400 hidden sm:block"
+                  to="/signup"
+                >
                   Cadastrar
                 </Link>
-                <Link className="font-bold text-gray-800 hover:text-gray-400" to="/signin">
+                <Link
+                  className="font-bold text-gray-800 hover:text-gray-400"
+                  to="/signin"
+                >
                   Entrar
                 </Link>
               </>
