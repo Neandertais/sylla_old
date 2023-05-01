@@ -1,5 +1,5 @@
 import { Avatar, Badge, Input } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "src/contexts/Authentication";
 
@@ -8,7 +8,8 @@ import { BiArrowBack } from "react-icons/bi";
 import { useRef } from "react";
 
 export default function Header() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const searchMenu = useRef<HTMLDetailsElement>(null);
 
   function handleCloseSearchMenu() {
@@ -57,17 +58,29 @@ export default function Header() {
                   <summary className="list-none group-open:before:content-[''] group-open:before:fixed group-open:before:bottom-0 group-open:before:right-0 group-open:before:top-0 group-open:before:left-0">
                     <Avatar className="cursor-pointer" />
                   </summary>
-                  <div className="flex flex-col gap-3 py-3 absolute bg-white shadow-md border w-44 right-4 top-14 rounded-md">
-                    <Link className="px-4" to="/u/alisson">
+                  <div className="flex flex-col gap-2 py-3 absolute bg-white shadow-md border w-44 right-4 top-16 rounded-md">
+                    <Link
+                      className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
+                      to="/u/alisson"
+                    >
                       Visualizar Perfil
                     </Link>
-                    <Link className="px-4" to="/settings/profile">
+                    <Link
+                      className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
+                      to="/settings/profile"
+                    >
                       Editar Perfil
                     </Link>
                     <div className="border border-t-0 w-full" />
-                    <Link className="px-4" to="">
+                    <span
+                      className="mx-2 cursor-pointer px-2 py-1 rounded-md text-red-500 hover:bg-red-100 hover:text-red-500"
+                      onClick={() => {
+                        signOut();
+                        navigate(0);
+                      }}
+                    >
                       Sair
-                    </Link>
+                    </span>
                   </div>
                 </details>
               </>

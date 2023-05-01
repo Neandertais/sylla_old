@@ -21,22 +21,13 @@ export const AuthContext = createContext<IAuthContext>({} as IAuthContext);
 export const useAuth = () => useContext(AuthContext);
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<IUser | undefined>();
-  const [token, setToken] = useState<string | undefined>();
-
-  useEffect(() => {
-    const user = localStorage.getItem("sylla.user");
-    const token = localStorage.getItem("sylla.token");
-
-    if (!user || !token) return;
-
-    setUser(JSON.parse(user));
-    setToken(token);
-  }, []);
+  const storedUser = localStorage.getItem("sylla.user");
+  const user: IUser | undefined = storedUser && JSON.parse(storedUser);
+  const token = localStorage.getItem("sylla.token");
 
   const context: IAuthContext = {
     user,
-    token,
+    token: token!,
     signIn({ user, token }) {
       localStorage.setItem("sylla.user", JSON.stringify(user));
       localStorage.setItem("sylla.token", token);
