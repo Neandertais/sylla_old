@@ -5,8 +5,9 @@ import {
   useEffect,
   useState,
 } from "react";
+import { Navigate } from "react-router-dom";
+
 import { IUser } from "../types/user";
-import { redirect, useNavigate } from "react-router-dom";
 
 interface IAuthContext {
   user?: IUser;
@@ -49,4 +50,16 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={context}>{children}</AuthContext.Provider>
   );
+}
+
+export function AuthRedirect({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+
+  return user ? <Navigate to="/" /> : <>{children}</>;
+}
+
+export function AuthProtected({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+
+  return user ? <>{children}</> : <Navigate to="/signin" />;
 }
