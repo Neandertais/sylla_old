@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Button, Form, Input } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 
-import logo from "../assets/undraw_2.svg";
 import { useAuth } from "../contexts/Authentication";
 import { api } from "../services/axios";
+
+import logo from "../assets/undraw_2.svg";
 
 interface ISignInForm {
   email: string;
@@ -13,6 +15,7 @@ interface ISignInForm {
 export default function SignIn() {
   const auth = useAuth();
   const navigate = useNavigate();
+  const [errors, setErrors] = useState<string>();
 
   async function handleSubmit(form: ISignInForm) {
     try {
@@ -30,7 +33,9 @@ export default function SignIn() {
       });
 
       navigate(0);
-    } catch (error) {}
+    } catch (error) {
+      setErrors("Email ou senha inválidos");
+    }
   }
 
   return (
@@ -41,14 +46,14 @@ export default function SignIn() {
             Login
           </h1>
           <Form layout="vertical" onFinish={handleSubmit}>
-            <Form.Item label="Email" name="email">
+            <Form.Item label="Email" name="email" validateStatus={errors && "error"}>
               <Input />
             </Form.Item>
-            <Form.Item label="Senha" name="password">
+            <Form.Item label="Senha" name="password" validateStatus={errors && "error"} help={errors}>
               <Input.Password />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit" className="w-full">
+              <Button type="primary" htmlType="submit" className="w-full mt-4">
                 Entrar
               </Button>
               <span className="text-center block mt-6">

@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Button, Form, Input } from "antd";
 import { Link, useNavigate } from "react-router-dom";
+import { debounce } from "lodash-es";
 
 import { useAuth } from "../contexts/Authentication";
 import { api } from "../services/axios";
@@ -18,7 +20,6 @@ export default function SignUp() {
   const navigate = useNavigate();
 
   async function handleSubmit(form: ISignUpForm) {
-    if (form.password !== form.password_confirmation) return;
     try {
       const response = await api.post("/auth/signup", {
         ...form,
@@ -30,6 +31,25 @@ export default function SignUp() {
       navigate(0);
     } catch (error) {}
   }
+
+  const checkAlreadyUsed = debounce((field, value, setState) => {
+    api
+      .post("auth/used", { [field]: value })
+      .then(() => {
+        setState(null);
+      })
+      .catch(() => {
+        if (field === "username") {
+          return setState("Nome de usuário já está em uso");
+        }
+        setState("Email já está em uso");
+      });
+  }, 1000);
+
+  const [usernameErrorStatus, setUsernameErrorStatus] = useState<string | null>(
+    null
+  );
+  const [emailErrorStatus, setEmailErrorStatus] = useState<string | null>(null);
 
   return (
     <div className="grid min-h-screen lg:grid-cols-[1.2fr,1fr]">
@@ -45,6 +65,8 @@ export default function SignUp() {
             <Form.Item
               label="Nome de usuário"
               name="username"
+              {...(usernameErrorStatus && { validateStatus: "error" })}
+              help={usernameErrorStatus}
               rules={[
                 {
                   required: true,
@@ -62,12 +84,19 @@ export default function SignUp() {
                 },
               ]}
             >
-              <Input className="" />
+              <Input
+                onChange={({ target: { value } }) =>
+                  checkAlreadyUsed("username", value, setUsernameErrorStatus)
+                }
+                className=""
+              />
             </Form.Item>
             <Form.Item
               label="Email"
               name="email"
               className="mt-8"
+              {...(emailErrorStatus && { validateStatus: "error" })}
+              help={emailErrorStatus}
               rules={[
                 {
                   required: true,
@@ -79,7 +108,11 @@ export default function SignUp() {
                 },
               ]}
             >
-              <Input />
+              <Input
+                onChange={({ target: { value } }) =>
+                  checkAlreadyUsed("email", value, setEmailErrorStatus)
+                }
+              />
             </Form.Item>
             <Form.Item
               label="Senha"

@@ -4,7 +4,7 @@ export default function usersRouter() {
   Route.group(() => {
     Route.resource("users", "UsersController")
       .paramFor("users", "username")
-      .only(["show", "update"])
-      .middleware({ update: ["auth"] });
+      .only(["index", "show", "update"])
+      .middleware({ index: ["auth"], update: ["auth"] });
   }).namespace("App/Modules/Users");
 }

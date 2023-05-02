@@ -5,6 +5,10 @@ import { nanoid } from "nanoid";
 import User, { Platforms } from "App/Models/User";
 
 export default class UsersController {
+  public async index({ auth: { user } }: HttpContextContract) {
+    return { user };
+  }
+
   public async show({ params: { username }, response }: HttpContextContract) {
     const user = await User.find(username);
 

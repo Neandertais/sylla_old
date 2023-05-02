@@ -90,4 +90,39 @@ export default class AuthenticationController {
       loggedOut: true,
     };
   }
+
+  public async alreadyUsed({ request, response }: HttpContextContract) {
+    const alreadyUsedSchema = schema.create({
+      username: schema.string.optional(),
+      email: schema.string.optional(),
+    });
+
+    try {
+      const { username, email } = await request.validate({
+        schema: alreadyUsedSchema,
+      });
+
+      if (username) {
+        const user = await User.find(username);
+
+        if (user) {
+          return response.conflict({ field: "username" });
+        }
+
+        return response.noContent();
+      }
+
+      if (email) {
+        const user = await User.findBy("email", email);
+
+        if (user) {
+          return response.conflict({ field: "email" });
+        }
+
+        return response.noContent();
+      }
+    } catch (error) {}
+
+    return response.badRequest({ message: "Expected argument" });
+  }
 }
