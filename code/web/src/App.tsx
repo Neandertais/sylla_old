@@ -13,6 +13,8 @@ import SignUp from "@routes/SignUp";
 import SignIn from "@routes/SignIn";
 import Profile from "@routes/Profile";
 import EditProfile from "@routes/EditProfile";
+import CreateCourse from "@routes/CreateCourse";
+import Settings from "@routes/Settings";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +37,14 @@ const router = createBrowserRouter([
         path: "/u/:id",
         element: <Profile />,
       },
+      {
+        path:"createCourse",
+        element: <CreateCourse/>,
+      },
+      {
+        path:"settings",
+        element:<Settings/>
+      }
     ],
   },
   {
@@ -53,6 +63,7 @@ const router = createBrowserRouter([
       </AuthRedirect>
     ),
   },
+
 ]);
 
 export default function App() {
