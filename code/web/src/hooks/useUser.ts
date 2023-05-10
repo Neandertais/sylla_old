@@ -1,15 +1,13 @@
+import { IUser } from "src/types/user";
 import useSWR from "swr";
 
-import { api } from "@services/api";
-
 export default function useUser(username?: string) {
-  const { data, error, isLoading } = useSWR(
-    username ? `/users/${username}` : "/users",
-    api
-  );
+  const url = username ? `/users/${username}` : "/users";
+  
+  const { data, error, isLoading } = useSWR(url);
 
   return {
-    user: data?.user,
+    user: data?.data as IUser,
     error,
     isLoading,
   };

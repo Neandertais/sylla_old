@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button, Form, Input } from "antd";
 import { Link, useNavigate } from "react-router-dom";
+import isEmail from "validator/es/lib/isEmail";
 
 import { useAuth } from "@contexts/Authentication";
 import { fetch } from "@services/api";
@@ -8,27 +9,32 @@ import { fetch } from "@services/api";
 import logo from "@assets/undraw_2.svg";
 
 interface ISignInForm {
-  email: string;
+  emailOrUsername: string;
   password: string;
 }
 
 export default function SignIn() {
   const auth = useAuth();
   const navigate = useNavigate();
+
   const [errors, setErrors] = useState<string>();
 
   async function handleSubmit(form: ISignInForm) {
     try {
-      const response = await fetch.post("/auth/login", {
-        ...form,
-      });
+      const { emailOrUsername, password } = form;
 
-      const user = await fetch.get("/users", {
-        headers: { Authorization: `Bearer ${response.data.token}` },
+      const email = isEmail(emailOrUsername) ? emailOrUsername : null;
+      const username = !email ? emailOrUsername : null;
+
+      console.log(email)
+
+      const response = await fetch.post("/auth/login", {
+        email,
+        username,
+        password,
       });
 
       auth.signIn({
-        user: user.data.user,
         token: response.data.token,
       });
 
@@ -47,8 +53,8 @@ export default function SignIn() {
           </h1>
           <Form layout="vertical" onFinish={handleSubmit}>
             <Form.Item
-              label="Email"
-              name="email"
+              label="Nome de usuário ou email"
+              name="emailOrUsername"
               validateStatus={errors && "error"}
             >
               <Input />
@@ -67,7 +73,7 @@ export default function SignIn() {
               </Button>
               <span className="text-center block mt-6">
                 Não tem conta?{" "}
-                <Link className="text-cyan-600" to="/signup">
+                <Link className="text-cyan-600" to="/auth/signup">
                   Cadastra-se
                 </Link>
               </span>

@@ -9,7 +9,7 @@ import { IUser } from "../types/user";
 interface AuthContextProps {
   user?: IUser;
   apiToken?: string;
-  signIn: ({}: { user: IUser; token: string }) => void;
+  signIn: ({}: { token: string }) => void;
   signOut: () => void;
 }
 
@@ -35,7 +35,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const context: AuthContextProps = {
     user,
     apiToken,
-    signIn({ user, token }) {
+    signIn({ token }) {
       localStorage.setItem("sylla.token", token);
     },
     signOut() {

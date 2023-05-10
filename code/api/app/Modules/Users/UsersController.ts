@@ -6,7 +6,7 @@ import User, { Platforms } from "App/Models/User";
 
 export default class UsersController {
   public async index({ auth: { user } }: HttpContextContract) {
-    return { user };
+    return { data: user };
   }
 
   public async show({ params: { username }, response }: HttpContextContract) {
@@ -16,7 +16,7 @@ export default class UsersController {
       return response.notFound({ error: "User not found" });
     }
 
-    return user;
+    return { data: user };
   }
 
   public async update({
@@ -87,7 +87,7 @@ export default class UsersController {
 
       await user?.save();
 
-      return user;
+      return { data: user };
     } catch (error) {
       return response.badRequest(error.messages);
     }

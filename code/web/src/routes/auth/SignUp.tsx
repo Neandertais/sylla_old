@@ -159,7 +159,7 @@ export default function SignUp() {
               </Button>
               <span className="text-center block mt-6">
                 Já tem conta?{" "}
-                <Link className="text-cyan-600" to="/signin">
+                <Link className="text-cyan-600" to="/auth/signin">
                   Entre
                 </Link>
               </span>

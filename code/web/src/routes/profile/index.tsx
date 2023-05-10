@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Avatar } from "antd";
 
@@ -9,22 +8,23 @@ import {
   GlobalOutlined,
 } from "@ant-design/icons";
 
-import { IUser } from "src/types/user";
-import { fetch } from "@services/api";
+import useUser from "@hooks/useUser";
 
 export default function Profile() {
   const { username } = useParams();
-  const [user, setUser] = useState<IUser>({} as IUser);
+  const { user, isLoading } = useUser(username);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await fetch.get(`users/${username}`);
-
-        setUser(response.data);
-      } catch (error) {}
-    })();
-  }, []);
+  if (isLoading) {
+    return (
+      <div className="animate-pulse my-12">
+        <div className="bg-gray-200 rounded-md w-4/12 h-16 mb-3"></div>
+        <div className="bg-gray-200 rounded-md w-6/12 h-28 mb-6"></div>
+        <div className="bg-gray-200 rounded-md w-6/12 h-16 mb-16"></div>
+        <div className="bg-gray-200 rounded-md w-2/12 h-12 mb-6"></div>
+        <div className="bg-gray-200 rounded-md w-6/12 h-16"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto my-12 flex flex-col">
@@ -76,10 +76,13 @@ export default function Profile() {
         <h3 className="mt-6 font-bold text-xl">Sobre</h3>
         <p className="mt-2 text-base">{user?.biography}</p>
       </div>
+    </div>
+  );
 
-      <div></div>
+  //     <div></div>
 
-      {/* <div className="mt-20 mb-6 ml-6">
+  // {
+    /* <div className="mt-20 mb-6 ml-6">
       </div>
       <div>
         <Form
@@ -110,7 +113,7 @@ export default function Profile() {
             />
           </Form.Item>
         </Form>
-      </div> */}
-    </div>
-  );
+      </div> */
+      // </div>
+      // );
 }

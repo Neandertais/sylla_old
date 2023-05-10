@@ -102,13 +102,13 @@ export default function Header() {
               <>
                 <Link
                   className="font-bold text-gray-800 hover:text-gray-400 hidden sm:block"
-                  to="/signup"
+                  to="/auth/signup"
                 >
                   Cadastrar
                 </Link>
                 <Link
                   className="font-bold text-gray-800 hover:text-gray-400"
-                  to="/signin"
+                  to="/auth/signin"
                 >
                   Entrar
                 </Link>

@@ -1,8 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ConfigProvider, App as AppAntd } from "antd";
+import { SWRConfig } from "swr";
 
 import Layout from "@components/Layout";
 import AuthProvider from "@contexts/Authentication";
+import { api } from "@services/api";
 
 import Home from "@routes/Home";
 import AuthRoutes from "@routes/auth/routes";
@@ -26,9 +28,11 @@ export default function App() {
   return (
     <ConfigProvider>
       <AppAntd>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <SWRConfig value={{ fetcher: api, provider: () => new Map() }}>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </SWRConfig>
       </AppAntd>
     </ConfigProvider>
   );
