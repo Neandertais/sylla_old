@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
-import { Avatar, Card } from "antd";
+import { useParams } from "react-router-dom";
+import { Avatar } from "antd";
+
 import {
   FacebookOutlined,
   LinkedinOutlined,
   InstagramOutlined,
   GlobalOutlined,
-  PlusOutlined,
 } from "@ant-design/icons";
 
-import { Button, Form, Input } from "antd";
 import { IUser } from "src/types/user";
-import { api } from "src/services/axios";
-import { useParams } from "react-router-dom";
+import { fetch } from "@services/api";
 
 export default function Profile() {
   const { username } = useParams();
@@ -20,7 +19,7 @@ export default function Profile() {
   useEffect(() => {
     (async () => {
       try {
-        const response = await api.get(`users/${username}`);
+        const response = await fetch.get(`users/${username}`);
 
         setUser(response.data);
       } catch (error) {}
@@ -51,22 +50,22 @@ export default function Profile() {
           <ul className="flex gap-4 mt-6">
             <li>
               <a href="#">
-                <GlobalOutlined style={{ fontSize: 22}} />
+                <GlobalOutlined style={{ fontSize: 22 }} />
               </a>
             </li>
             <li>
               <a href="#">
-                <FacebookOutlined style={{ fontSize: 22}}/>
+                <FacebookOutlined style={{ fontSize: 22 }} />
               </a>
             </li>
             <li>
               <a href="#">
-                <InstagramOutlined style={{ fontSize: 22}}/>
+                <InstagramOutlined style={{ fontSize: 22 }} />
               </a>
             </li>
             <li>
               <a href="#">
-                <LinkedinOutlined style={{ fontSize: 22}}/>
+                <LinkedinOutlined style={{ fontSize: 22 }} />
               </a>
             </li>
           </ul>

@@ -4,11 +4,13 @@ const BASE_URL = "http://localhost:3333/api/v1";
 
 const token = localStorage.getItem("sylla.token");
 
-export const api = axios.create({
+export const fetch = axios.create({
   baseURL: BASE_URL,
 });
 
-api.interceptors.request.use((request) => {
+export const api = (url: string) => fetch.get(url).then((res) => res.data);
+
+fetch.interceptors.request.use((request) => {
   if (token) {
     request.headers.Authorization = `Bearer ${token}`;
   }

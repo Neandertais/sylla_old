@@ -1,7 +1,7 @@
 import LayoutSideBar from "@components/LayoutSideBar";
 import { Content } from "antd/es/layout/layout";
 
-export default function Settings() {
+export default function CourseSettings() {
   return (
     <LayoutSideBar>
       <Content>

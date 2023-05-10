@@ -3,10 +3,10 @@ import { Button, Form, Input } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { debounce } from "lodash-es";
 
-import { useAuth } from "../contexts/Authentication";
-import { api } from "../services/axios";
+import { useAuth } from "@contexts/Authentication";
+import { fetch } from "@services/api";
 
-import logo from "../assets/undraw.svg";
+import logo from "@assets/undraw.svg";
 
 interface ISignUpForm {
   username: string;
@@ -21,7 +21,7 @@ export default function SignUp() {
 
   async function handleSubmit(form: ISignUpForm) {
     try {
-      const response = await api.post("/auth/signup", {
+      const response = await fetch.post("/auth/signup", {
         ...form,
       });
       auth.signIn({
@@ -33,7 +33,7 @@ export default function SignUp() {
   }
 
   const checkAlreadyUsed = debounce((field, value, setState) => {
-    api
+    fetch
       .post("auth/used", { [field]: value })
       .then(() => {
         setState(null);

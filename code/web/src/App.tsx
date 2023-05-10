@@ -1,69 +1,25 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ConfigProvider, App as AppAntd } from "antd";
 
-import AuthProvider, {
-  AuthProtected,
-  AuthRedirect,
-} from "./contexts/Authentication";
-
 import Layout from "@components/Layout";
+import AuthProvider from "@contexts/Authentication";
 
 import Home from "@routes/Home";
-import SignUp from "@routes/SignUp";
-import SignIn from "@routes/SignIn";
-import Profile from "@routes/Profile";
-import EditProfile from "@routes/EditProfile";
-import CreateCourse from "@routes/CreateCourse";
-import Settings from "@routes/Settings";
+import AuthRoutes from "@routes/auth/routes";
+import CourseRoutes from "@routes/course/routes";
+import ProfileRoutes from "@routes/profile/routes";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
-      {
-        path: "",
-        element: <Home />,
-      },
-      {
-        path: "/settings/profile",
-        element: (
-          <AuthProtected>
-            <EditProfile />
-          </AuthProtected>
-        ),
-      },
-      {
-        path: "/u/:username",
-        element: <Profile />,
-      },
-      {
-        path:"course/create",
-        element: <CreateCourse/>,
-      },
-      {
-        path:"settings",
-        element:<Settings/>
-      }
+      { path: "", element: <Home /> },
+      ...CourseRoutes,
+      ...ProfileRoutes,
     ],
   },
-  {
-    path: "/signup",
-    element: (
-      <AuthRedirect>
-        <SignUp />
-      </AuthRedirect>
-    ),
-  },
-  {
-    path: "/signin",
-    element: (
-      <AuthRedirect>
-        <SignIn />
-      </AuthRedirect>
-    ),
-  },
-
+  ...AuthRoutes,
 ]);
 
 export default function App() {

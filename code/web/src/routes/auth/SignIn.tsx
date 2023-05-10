@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Button, Form, Input } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 
-import { useAuth } from "../contexts/Authentication";
-import { api } from "../services/axios";
+import { useAuth } from "@contexts/Authentication";
+import { fetch } from "@services/api";
 
-import logo from "../assets/undraw_2.svg";
+import logo from "@assets/undraw_2.svg";
 
 interface ISignInForm {
   email: string;
@@ -19,11 +19,11 @@ export default function SignIn() {
 
   async function handleSubmit(form: ISignInForm) {
     try {
-      const response = await api.post("/auth/login", {
+      const response = await fetch.post("/auth/login", {
         ...form,
       });
 
-      const user = await api.get("/users", {
+      const user = await fetch.get("/users", {
         headers: { Authorization: `Bearer ${response.data.token}` },
       });
 

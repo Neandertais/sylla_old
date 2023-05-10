@@ -1,15 +1,16 @@
-import { Avatar, Badge, Input } from "antd";
+import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Avatar, Badge, Input } from "antd";
 
-import { useAuth } from "src/contexts/Authentication";
+import { useAuth } from "@contexts/Authentication";
 
 import { AiOutlineBell, AiOutlineSearch } from "react-icons/ai";
 import { BiArrowBack } from "react-icons/bi";
-import { useRef } from "react";
 
 export default function Header() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+
   const searchMenu = useRef<HTMLDetailsElement>(null);
 
   function handleCloseSearchMenu() {
@@ -67,14 +68,14 @@ export default function Header() {
                     </Link>
                     <Link
                       className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
-                      to="/settings/profile"
+                      to="/u/settings"
                     >
                       Editar Perfil
                     </Link>
                     <div className="border border-t-0 w-full" />
                     <Link
                       className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
-                      to="/settings/profile"
+                      to="/u/settings"
                     >
                       Meus Cursos
                     </Link>

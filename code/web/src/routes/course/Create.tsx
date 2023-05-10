@@ -4,7 +4,7 @@ import { UploadOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
 
-export default function CreateCourse() {
+export default function CourseCreate() {
   return (
     <div className="flex flex-col py-10">
       <h1 className="font-sans font-bold text-2xl ml-16">Criar Curso</h1>

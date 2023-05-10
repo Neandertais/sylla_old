@@ -1,22 +1,18 @@
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { ReactNode, createContext, useContext } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
 import { IUser } from "../types/user";
 
-interface IAuthContext {
+interface AuthContextProps {
   user?: IUser;
   token?: string;
   signIn: ({}: { user: IUser; token: string }) => void;
   signOut: () => void;
 }
 
-export const AuthContext = createContext<IAuthContext>({} as IAuthContext);
+export const AuthContext = createContext<AuthContextProps>(
+  {} as AuthContextProps
+);
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -25,7 +21,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const user: IUser | undefined = storedUser && JSON.parse(storedUser);
   const token = localStorage.getItem("sylla.token");
 
-  const context: IAuthContext = {
+  const context: AuthContextProps = {
     user,
     token: token!,
     signIn({ user, token }) {
