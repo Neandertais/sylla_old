@@ -72,6 +72,19 @@ export default function Header() {
                       Editar Perfil
                     </Link>
                     <div className="border border-t-0 w-full" />
+                    <Link
+                      className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
+                      to="/settings/profile"
+                    >
+                      Meus Cursos
+                    </Link>
+                    <Link
+                      className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
+                      to="/course/create"
+                    >
+                      Criar Curso
+                    </Link>
+                    <div className="border border-t-0 w-full" />
                     <span
                       className="mx-2 cursor-pointer px-2 py-1 rounded-md text-red-500 hover:bg-red-100 hover:text-red-500"
                       onClick={() => {
