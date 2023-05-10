@@ -29,12 +29,12 @@ const router = createBrowserRouter([
         path: "/settings/profile",
         element: (
           <AuthProtected>
-            <EditProfile />{" "}
+            <EditProfile />
           </AuthProtected>
         ),
       },
       {
-        path: "/u/:id",
+        path: "/u/:username",
         element: <Profile />,
       },
       {

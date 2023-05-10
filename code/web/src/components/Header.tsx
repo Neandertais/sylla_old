@@ -61,7 +61,7 @@ export default function Header() {
                   <div className="flex flex-col gap-2 py-3 absolute bg-white shadow-md border w-44 right-4 top-16 rounded-md">
                     <Link
                       className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
-                      to="/u/alisson"
+                      to={`/u/${user.username}`}
                     >
                       Visualizar Perfil
                     </Link>

@@ -28,7 +28,7 @@ export default function SignIn() {
       });
 
       auth.signIn({
-        user: user.data,
+        user: user.data.user,
         token: response.data.token,
       });
 
@@ -46,10 +46,19 @@ export default function SignIn() {
             Login
           </h1>
           <Form layout="vertical" onFinish={handleSubmit}>
-            <Form.Item label="Email" name="email" validateStatus={errors && "error"}>
+            <Form.Item
+              label="Email"
+              name="email"
+              validateStatus={errors && "error"}
+            >
               <Input />
             </Form.Item>
-            <Form.Item label="Senha" name="password" validateStatus={errors && "error"} help={errors}>
+            <Form.Item
+              label="Senha"
+              name="password"
+              validateStatus={errors && "error"}
+              help={errors}
+            >
               <Input.Password />
             </Form.Item>
             <Form.Item>

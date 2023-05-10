@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 import { IUser } from "../types/user";
 
@@ -51,6 +51,15 @@ export function AuthRedirect({ children }: { children: React.ReactNode }) {
 
 export function AuthProtected({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const location = useLocation();
 
-  return user ? <>{children}</> : <Navigate to="/signin" />;
+  return (
+    <>
+      {user ? (
+        { children }
+      ) : (
+        <Navigate to="/signin" state={{ from: location }} replace />
+      )}
+    </>
+  );
 }

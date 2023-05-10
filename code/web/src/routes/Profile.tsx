@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { Avatar, Card } from "antd";
 import {
   FacebookOutlined,
@@ -9,18 +9,33 @@ import {
 } from "@ant-design/icons";
 
 import { Button, Form, Input } from "antd";
-const { TextArea } = Input;
+import { IUser } from "src/types/user";
+import { api } from "src/services/axios";
+import { useParams } from "react-router-dom";
 
 export default function Profile() {
-  const inputStyle = { border: "none" };
+  const { username } = useParams();
+  const [user, setUser] = useState<IUser>({} as IUser);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await api.get(`users/${username}`);
+
+        setUser(response.data);
+      } catch (error) {}
+    })();
+  }, []);
 
   return (
     <div className="max-w-3xl mx-auto my-12 flex flex-col">
       <div className="flex">
         <div className="flex flex-col flex-1">
           <p className="font-black text-lg text-gray-600">INSTRUTOR</p>
-          <h2 className="font-bold text-4xl">Alisson Livio</h2>
-          <p className="mt-2 font-bold text-base">Estudante</p>
+          <h2 className="font-bold text-4xl">
+            {user?.name ? user.name : user?.username}
+          </h2>
+          <p className="mt-2 font-bold text-base">{user?.profession}</p>
 
           <div className="flex gap-6 mt-auto">
             <div>
@@ -33,15 +48,34 @@ export default function Profile() {
             </div>
           </div>
 
-          <ul>
-            <li><a href="#"><GlobalOutlined /></a></li>
+          <ul className="flex gap-4 mt-6">
+            <li>
+              <a href="#">
+                <GlobalOutlined style={{ fontSize: 22}} />
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <FacebookOutlined style={{ fontSize: 22}}/>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <InstagramOutlined style={{ fontSize: 22}}/>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <LinkedinOutlined style={{ fontSize: 22}}/>
+              </a>
+            </li>
           </ul>
         </div>
         <Avatar size={180} src={<img src="https://picsum.photos/256/320" />} />
       </div>
       <div>
         <h3 className="mt-6 font-bold text-xl">Sobre</h3>
-        <p className="mt-2 text-base">Um otaku perdido</p>
+        <p className="mt-2 text-base">{user?.biography}</p>
       </div>
 
       <div></div>
