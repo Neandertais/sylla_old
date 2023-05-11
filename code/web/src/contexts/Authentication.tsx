@@ -20,7 +20,7 @@ export const AuthContext = createContext<AuthContextProps>(
 export const useAuth = () => useContext(AuthContext);
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const { user, error, isLoading } = useUser();
+  const { user, isLoading } = useUser();
 
   if (isLoading) {
     return (
