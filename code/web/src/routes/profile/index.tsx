@@ -49,7 +49,7 @@ export default function Profile() {
 
           <ul className="flex gap-4 mt-6">
             {user.socialLinks?.map(({ platform, link }) => (
-              <li>
+              <li key={platform}>
                 <a target="_blank" rel="noopener noreferrer" href={link}>
                   {platform === "Website" && (
                     <GlobalOutlined style={{ fontSize: 22 }} />
