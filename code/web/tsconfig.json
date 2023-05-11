@@ -22,7 +22,8 @@
       "@contexts/*": ["./src/contexts/*"],
       "@services/*": ["./src/services/*"],
       "@assets/*": ["./src/assets/*"],
-      "@hooks/*": ["./src/hooks/*"]
+      "@hooks/*": ["./src/hooks/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   },
   "include": ["src"],

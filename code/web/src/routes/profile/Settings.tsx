@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button, Form, Input, Upload } from "antd";
 import {
   FacebookOutlined,
@@ -7,106 +8,276 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 
-const { TextArea } = Input;
+import { useAuth } from "@contexts/Authentication";
+import { fetch } from "@services/api";
+import { toBase64 } from "@utils/converts";
 
 export default function UserPerfil() {
-  const user = {
-    name: "Alisson Lívio",
-    username: "Alivinho",
-    biography: "Um otaku perdido",
-    profession: "Estudante",
-  };
+  const { user } = useAuth();
 
-  const onFinish = (values) => {
-    console.log("Form values:", values);
-  };
+  const [avatarFile, setAvatarFile] = useState<File>();
+  const [avatarUrl, setAvatarUrl] = useState(
+    user?.avatar && "http://localhost:3333/uploads/" + user.avatar
+  );
+
+  async function handleUpdateUser(data: any) {
+    const form = new FormData();
+
+    const socialLinks: SocialLink[] = [];
+    const socialLinksOptions = {
+      facebookLink: {
+        platform: "Facebook" as Platforms,
+      },
+      instagramLink: {
+        platform: "Instagram" as Platforms,
+      },
+      linkedinLink: {
+        platform: "LinkedIn" as Platforms,
+      },
+      websiteLink: {
+        platform: "Website" as Platforms,
+      },
+    };
+
+    for (const [key, value] of Object.entries(data)) {
+      const socialLink =
+        socialLinksOptions[key as keyof typeof socialLinksOptions];
+
+      if (socialLink && value) {
+        socialLinks.push({ ...socialLink, link: value as string });
+        continue;
+      }
+
+      if (key == "username") {
+        value !== user?.username && form.set("username", value as string);
+        continue;
+      }
+
+      value && form.set(key, value as string);
+    }
+    avatarFile && form.set("avatar", avatarFile);
+
+    if (socialLinks) {
+      await fetch.patch(`users/${user?.username}`, {
+        social_links: socialLinks,
+      });
+    }
+
+    await fetch.patch(`users/${user?.username}`, form);
+    location.reload();
+  }
 
   return (
-    <div className="max-w-md mx-auto flex flex-col items-center py-12">
-      <h1 className="self-start font-bold text-2xl mb-6">Perfil público</h1>
-      <div className="mb-6">
-        <Upload listType="picture-circle">
-          <div>
-            <PlusOutlined />
-            <div style={{ marginTop: 8 }}>Upload</div>
-          </div>
-          {/* <div className="w-full h-full rounded-full overflow-hidden">
-            <img src="https://picsum.photos/256/320" className="w-full object-contain"/>
-          </div> */}
+    <div className="max-w-lg mx-auto flex flex-col items-center py-12">
+      <h2 className="self-start font-bold text-2xl mb-6">Perfil público</h2>
+      <div className="mb-6 flex justify-center">
+        <Upload
+          listType="picture-circle"
+          showUploadList={false}
+          customRequest={({ file, onSuccess }) => {
+            toBase64(file as File).then((url) => {
+              setAvatarUrl(url);
+            });
+
+            setAvatarFile(file as File);
+
+            onSuccess && onSuccess(file);
+          }}
+        >
+          {avatarUrl ? (
+            <div className="w-full h-full flex items-center justify-center rounded-full overflow-hidden relative">
+              <img src={avatarUrl} className="w-full object-contain" />
+            </div>
+          ) : (
+            <div>
+              <PlusOutlined />
+              <div style={{ marginTop: 8 }}>Upload</div>
+            </div>
+          )}
         </Upload>
+        {(avatarFile || avatarUrl) && (
+          <p
+            className="self-center text-xs text-bold text-blue-500 cursor-pointer"
+            onClick={() => {
+              setAvatarFile(undefined);
+              setAvatarUrl(undefined);
+            }}
+          >
+            Remover
+          </p>
+        )}
       </div>
 
       <Form
         layout="vertical"
         className="w-full"
-        onFinish={onFinish}
+        onFinish={handleUpdateUser}
+        requiredMark={false}
         initialValues={user}
       >
         <Form.Item
-          label="Name"
+          label="Nome"
           name="name"
-          className="font-sans font-bold text-2xl"
+          className="font-sans text-2xl"
+          rules={[
+            {
+              type: "string",
+              max: 80,
+              message: "O nome deve ter no máximo 80 caracteres",
+            },
+            {
+              type: "string",
+              min: 16,
+              message: "O nome deve ter no mínimo 16 caracteres",
+            },
+          ]}
         >
-          <Input defaultValue={user.name} />
+          <Input />
         </Form.Item>
 
         <Form.Item
-          label="Username"
+          label="Nome de usuário"
           name="username"
-          className="font-sans font-bold text-2xl"
+          className="font-sans text-2xl"
+          rules={[
+            {
+              required: true,
+              message: "Nome de usuário não pode ficar em branco",
+            },
+            {
+              type: "string",
+              max: 28,
+              message: "O nome de usuário deve ter no máximo 16 caracteres",
+            },
+            {
+              type: "string",
+              min: 8,
+              message: "O nome de usuário deve ter pelo menos 8 caracteres",
+            },
+          ]}
         >
-          <Input defaultValue={user.username} />
+          <Input />
         </Form.Item>
 
         <Form.Item
-          label="Biography"
+          label="Biografia"
           name="biography"
-          className="font-sans font-bold text-2xl"
+          className="font-sans text-2xl"
+          rules={[
+            {
+              type: "string",
+              max: 360,
+              message: "A biografia deve ter no máximo 360 caracteres",
+            },
+            {
+              type: "string",
+              min: 32,
+              message: "A biografia deve ter pelo menos 32 caracteres",
+            },
+          ]}
         >
-          <TextArea rows={3} defaultValue={user.biography} />
+          <Input.TextArea rows={3} />
         </Form.Item>
 
         <Form.Item
-          label="Profession"
+          label="Profissão"
           name="profession"
-          className="font-sans font-bold text-2xl"
+          className="font-sans text-2xl"
+          rules={[
+            {
+              type: "string",
+              max: 80,
+              message: "A profissão deve ter no máximo 80 caracteres",
+            },
+            {
+              type: "string",
+              min: 4,
+              message: "A profissão deve ter pelo menos 4 caracteres",
+            },
+          ]}
         >
-          <Input defaultValue={user.profession} />
+          <Input />
         </Form.Item>
 
         <Form.Item
-          label="Social Links"
-          name="sociaLinks"
-          className="font-sans font-bold text-2xl"
+          label="Redes sociais"
+          name="facebookLink"
+          className="font-sans text-2xl"
+          initialValue={
+            user?.socialLinks?.find(({ platform }) => platform === "Facebook")
+              ?.link
+          }
+          rules={[
+            {
+              pattern: /(^https?:\/\/)?(www\.)?facebook.com\/([\w.]+)/,
+              message: "O link não corresponde a um link do facebook válido",
+            },
+          ]}
         >
           <Input
             addonBefore={<FacebookOutlined />}
-            placeholder="Link to social profile"
+            placeholder="https://www.facebook.com/username"
           />
         </Form.Item>
 
-        <Form.Item name="sociaLinks" className="font-sans font-bold text-2xl">
+        <Form.Item
+          name="linkedinLink"
+          className="font-sans text-2xl"
+          initialValue={
+            user?.socialLinks?.find(({ platform }) => platform === "LinkedIn")
+              ?.link
+          }
+          rules={[
+            {
+              pattern: new RegExp(/(^https?:\/\/)?(www\.)?linkedin.com\/in\//),
+              message: "O link não corresponde a um link do linkedin válido",
+            },
+          ]}
+        >
           <Input
             addonBefore={<LinkedinOutlined />}
-            placeholder="Link to social profile"
+            placeholder="https://www.linkedin.com/in/username"
           />
         </Form.Item>
 
-        <Form.Item name="sociaLinks" className="font-sans font-bold text-2xl">
+        <Form.Item
+          name="instagramLink"
+          className="font-sans text-2xl"
+          initialValue={
+            user?.socialLinks?.find(({ platform }) => platform === "Instagram")
+              ?.link
+          }
+          rules={[
+            {
+              pattern: /(^https?:\/\/)?(www\.)?instagram.com\/([\w.]+)/,
+              message: "O link não corresponde a um link do instagram válido",
+            },
+          ]}
+        >
           <Input
             addonBefore={<InstagramOutlined />}
-            placeholder="Link to social profile"
+            placeholder="https://www.instagram.com/username"
           />
         </Form.Item>
 
-        <Form.Item name="sociaLinks" className="font-sans font-bold text-2xl">
+        <Form.Item
+          name="websiteLink"
+          className="font-sans text-2xl"
+          initialValue={
+            user?.socialLinks?.find(({ platform }) => platform === "Website")
+              ?.link
+          }
+          rules={[
+            { type: "url", message: "O link não corresponde a um url válido" },
+          ]}
+        >
           <Input
             addonBefore={<GlobalOutlined />}
-            placeholder="Link to social profile"
+            placeholder="https://www.google.com"
           />
         </Form.Item>
 
-        <Form.Item>
+        <Form.Item className="mt-12">
           <Button type="primary" htmlType="submit">
             Salvar
           </Button>

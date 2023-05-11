@@ -25,7 +25,6 @@ export default function SignUp() {
         ...form,
       });
       auth.signIn({
-        user: response.data.user,
         token: response.data.token.token,
       });
       navigate(0);
@@ -74,7 +73,7 @@ export default function SignUp() {
                 },
                 {
                   type: "string",
-                  max: 16,
+                  max: 28,
                   message: "O nome de usuário deve ter no máximo 16 caracteres",
                 },
                 {

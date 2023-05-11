@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3333/api/v1";
+export const BASE_URL = "http://localhost:3333/api/v1";
 
 export const fetch = axios.create({
   baseURL: BASE_URL,
@@ -21,7 +21,7 @@ fetch.interceptors.request.use((request) => {
 fetch.interceptors.response.use(
   (response) => response,
   (error) => {
-    if ((error.response.status = 401)) {
+    if ((error.response?.status === 401)) {
       localStorage.removeItem("sylla.token");
     }
 

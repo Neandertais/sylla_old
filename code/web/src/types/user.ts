@@ -13,6 +13,7 @@ interface SocialLink {
 export interface IUser {
   username: string;
   name?: string;
+  avatar?: string,
   profession?: string;
   biography?: string;
   socialLinks?: SocialLink[];
