@@ -48,29 +48,27 @@ export default function Profile() {
           </div>
 
           <ul className="flex gap-4 mt-6">
-            <li>
-              <a href="#">
-                <GlobalOutlined style={{ fontSize: 22 }} />
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <FacebookOutlined style={{ fontSize: 22 }} />
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <InstagramOutlined style={{ fontSize: 22 }} />
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <LinkedinOutlined style={{ fontSize: 22 }} />
-              </a>
-            </li>
+            {user.socialLinks?.map(({ platform, link }) => (
+              <li>
+                <a target="_blank" rel="noopener noreferrer" href={link}>
+                  {platform === "Website" && (
+                    <GlobalOutlined style={{ fontSize: 22 }} />
+                  )}
+                  {platform === "Instagram" && (
+                    <InstagramOutlined style={{ fontSize: 22 }} />
+                  )}
+                  {platform === "Facebook" && (
+                    <FacebookOutlined style={{ fontSize: 22 }} />
+                  )}
+                  {platform === "LinkedIn" && (
+                    <LinkedinOutlined style={{ fontSize: 22 }} />
+                  )}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
-        <Avatar size={180} src={<img src="https://picsum.photos/256/320" />} />
+        <Avatar size={180} src={user?.avatar} />
       </div>
       <div>
         <h3 className="mt-6 font-bold text-xl">Sobre</h3>
@@ -78,42 +76,4 @@ export default function Profile() {
       </div>
     </div>
   );
-
-  //     <div></div>
-
-  // {
-    /* <div className="mt-20 mb-6 ml-6">
-      </div>
-      <div>
-        <Form
-          layout="vertical"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 15 }}
-          style={{ maxWidth: 600 }}
-          className="ml-6"
-        >
-          <Form.Item name="name">
-            <Input
-              defaultValue={"Alisson Livio"}
-              style={inputStyle}
-              className="font-sans font-bold text-2xl"
-            />
-            <Input
-              name="username"
-              defaultValue={"Livinho"}
-              style={inputStyle}
-              className="font-sans"
-            />
-
-            <TextArea
-              name="biography"
-              rows={3}
-              defaultValue={"Um otaku perdido"}
-              style={inputStyle}
-            />
-          </Form.Item>
-        </Form>
-      </div> */
-      // </div>
-      // );
 }

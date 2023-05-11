@@ -57,7 +57,7 @@ export default function Header() {
                 </Badge>
                 <details className="group">
                   <summary className="list-none group-open:before:content-[''] group-open:before:fixed group-open:before:bottom-0 group-open:before:right-0 group-open:before:top-0 group-open:before:left-0">
-                    <Avatar className="cursor-pointer" />
+                    <Avatar className="cursor-pointer" src={user?.avatar} />
                   </summary>
                   <div className="flex flex-col gap-2 py-3 absolute bg-white shadow-md border w-44 right-4 top-16 rounded-md">
                     <Link

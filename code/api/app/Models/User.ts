@@ -1,3 +1,4 @@
+import Env from "@ioc:Adonis/Core/Env";
 import Hash from "@ioc:Adonis/Core/Hash";
 import {
   BaseModel,
@@ -32,7 +33,9 @@ export default class User extends BaseModel {
   @column()
   public biography: string;
 
-  @column()
+  @column({
+    serialize: (value) => `${Env.get("DOMAIN")}/uploads/${value}`,
+  })
   public avatar: string;
 
   @column({

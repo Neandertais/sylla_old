@@ -16,9 +16,7 @@ export default function UserPerfil() {
   const { user } = useAuth();
 
   const [avatarFile, setAvatarFile] = useState<File>();
-  const [avatarUrl, setAvatarUrl] = useState(
-    user?.avatar && "http://localhost:3333/uploads/" + user.avatar
-  );
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatar);
 
   async function handleUpdateUser(data: any) {
     const form = new FormData();
@@ -57,7 +55,7 @@ export default function UserPerfil() {
     }
     avatarFile && form.set("avatar", avatarFile);
 
-    if (socialLinks) {
+    if (socialLinks.length) {
       await fetch.patch(`users/${user?.username}`, {
         social_links: socialLinks,
       });
