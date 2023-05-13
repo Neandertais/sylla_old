@@ -56,7 +56,7 @@ export default function LayoutSideBar({ children }: { children: ReactNode }) {
             })}
           >
             <Link
-              to="/course/any/settings"
+              to="/course/any/settings/settingscourse"
               className="flex text-blue-500 p-2 hover:text-gray-600"
             >
               <IoSettingsOutline size={22} />
