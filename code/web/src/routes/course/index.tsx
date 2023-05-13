@@ -1,5 +1,9 @@
-export default function Course() {
+import LayoutSideBar from "@components/LayoutSideBar";
+
+export default function UploadVideo() {
   return (
-    <h1>Display course</h1>
+    <LayoutSideBar>
+      <h1>Upload de video</h1>
+    </LayoutSideBar>
   );
-};
+}
