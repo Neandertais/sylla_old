@@ -22,11 +22,7 @@ export default function CourseCreate() {
             <TextArea rows={3}></TextArea>
           </Form.Item>
 
-          <Form.Item label="Adicione uma descrição detalhada sobre o curso">
-            <TextArea rows={3}></TextArea>
-          </Form.Item>
-
-          <Form.Item label="O que você vai ensinar no curso">
+          <Form.Item label="O que as pessoas vão aprender no curso?">
             <TextArea rows={3}></TextArea>
           </Form.Item>
 
