@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button, Form, Input } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import isEmail from "validator/es/lib/isEmail";
 
 import { useAuth } from "@contexts/Authentication";
 import { fetch } from "@services/api";
@@ -21,21 +20,10 @@ export default function SignIn() {
 
   async function handleSubmit(form: ISignInForm) {
     try {
-      const { emailOrUsername, password } = form;
-
-      const email = isEmail(emailOrUsername) ? emailOrUsername : null;
-      const username = !email ? emailOrUsername : null;
-
-      console.log(email)
-
-      const response = await fetch.post("/auth/login", {
-        email,
-        username,
-        password,
-      });
+      const response = await fetch.post("/auth/signin", form);
 
       auth.signIn({
-        token: response.data.token,
+        token: response.data.data.token,
       });
 
       navigate(0);
@@ -54,7 +42,7 @@ export default function SignIn() {
           <Form layout="vertical" onFinish={handleSubmit}>
             <Form.Item
               label="Nome de usuário ou email"
-              name="emailOrUsername"
+              name="usernameOrEmail"
               validateStatus={errors && "error"}
             >
               <Input />

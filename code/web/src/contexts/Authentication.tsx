@@ -4,10 +4,9 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 
 import useUser from "@hooks/useUser";
-import { IUser } from "../types/user";
 
 interface AuthContextProps {
-  user?: IUser;
+  user?: User;
   apiToken?: string;
   signIn: ({}: { token: string }) => void;
   signOut: () => void;

@@ -1,69 +1,62 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form, Input, Upload } from "antd";
-import {
-  FacebookOutlined,
-  LinkedinOutlined,
-  InstagramOutlined,
-  GlobalOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { omit } from "underscore";
+import { PlusOutlined } from "@ant-design/icons";
 
-import { useAuth } from "@contexts/Authentication";
+import useUser from "@hooks/useUser";
 import { fetch } from "@services/api";
+import { useAuth } from "@contexts/Authentication";
 import { toBase64 } from "@utils/converts";
+import { mappedProfileIcons } from "@routes/profile";
 
 export default function UserPerfil() {
-  const { user } = useAuth();
+  const auth = useAuth();
+  const { user, isLoading } = useUser(auth?.user?.username);
 
   const [avatarFile, setAvatarFile] = useState<File>();
-  const [avatarUrl, setAvatarUrl] = useState(user?.avatar);
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl);
 
-  async function handleUpdateUser(data: any) {
-    const form = new FormData();
+  useEffect(() => {
+    setAvatarUrl(user?.avatarUrl);
+  }, [user?.avatarUrl]);
 
-    const socialLinks: SocialLink[] = [];
-    const socialLinksOptions = {
-      facebookLink: {
-        platform: "Facebook" as Platforms,
-      },
-      instagramLink: {
-        platform: "Instagram" as Platforms,
-      },
-      linkedinLink: {
-        platform: "LinkedIn" as Platforms,
-      },
-      websiteLink: {
-        platform: "Website" as Platforms,
-      },
-    };
+  async function handleUpdateUser(form: any) {
+    const { socialLinksList, ...rest } = form;
 
-    for (const [key, value] of Object.entries(data)) {
-      const socialLink =
-        socialLinksOptions[key as keyof typeof socialLinksOptions];
+    // Map array socialLinksList to object and omit same values
+    const data = omit(rest, function (v, k) {
+      return user[k as keyof typeof user] === v;
+    });
 
-      if (socialLink && value) {
-        socialLinks.push({ ...socialLink, link: value as string });
-        continue;
+    const socialLinks = omit(
+      Object.keys(mappedProfileIcons).reduce((obj, key, index) => {
+        return { ...obj, [key]: socialLinksList[index] };
+      }, {}),
+      function (v, k) {
+        return user.socialLinks![k as keyof typeof user.socialLinks] === v;
       }
+    );
 
-      if (key == "username") {
-        value !== user?.username && form.set("username", value as string);
-        continue;
-      }
-
-      value && form.set(key, value as string);
-    }
-    avatarFile && form.set("avatar", avatarFile);
-
-    if (socialLinks.length) {
-      await fetch.patch(`users/${user?.username}`, {
-        social_links: socialLinks,
-      });
+    if (Object.keys(socialLinks).length) {
+      data.socialLinks = socialLinks;
     }
 
-    await fetch.patch(`users/${user?.username}`, form);
+    if (!avatarFile && !avatarUrl) {
+      data.avatar = null;
+    }
+
+    if (avatarFile) {
+      const form = new FormData();
+      form.append("avatar", avatarFile);
+
+      await fetch.patch(`users/${user?.username}`, form);
+    }
+
+    await fetch.patch(`users/${user?.username}`, data);
     location.reload();
   }
+
+  if (isLoading) return <></>;
 
   return (
     <div className="max-w-lg mx-auto flex flex-col items-center py-12">
@@ -197,83 +190,27 @@ export default function UserPerfil() {
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label="Redes sociais"
-          name="facebookLink"
-          className="font-sans text-2xl"
-          initialValue={
-            user?.socialLinks?.find(({ platform }) => platform === "Facebook")
-              ?.link
-          }
-          rules={[
-            {
-              pattern: /(^https?:\/\/)?(www\.)?facebook.com\/([\w.]+)/,
-              message: "O link não corresponde a um link do facebook válido",
-            },
-          ]}
+        <Form.List
+          name="socialLinksList"
+          initialValue={Object.values(user?.socialLinks!)}
         >
-          <Input
-            addonBefore={<FacebookOutlined />}
-            placeholder="https://www.facebook.com/username"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="linkedinLink"
-          className="font-sans text-2xl"
-          initialValue={
-            user?.socialLinks?.find(({ platform }) => platform === "LinkedIn")
-              ?.link
-          }
-          rules={[
-            {
-              pattern: new RegExp(/(^https?:\/\/)?(www\.)?linkedin.com\/in\//),
-              message: "O link não corresponde a um link do linkedin válido",
-            },
-          ]}
-        >
-          <Input
-            addonBefore={<LinkedinOutlined />}
-            placeholder="https://www.linkedin.com/in/username"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="instagramLink"
-          className="font-sans text-2xl"
-          initialValue={
-            user?.socialLinks?.find(({ platform }) => platform === "Instagram")
-              ?.link
-          }
-          rules={[
-            {
-              pattern: /(^https?:\/\/)?(www\.)?instagram.com\/([\w.]+)/,
-              message: "O link não corresponde a um link do instagram válido",
-            },
-          ]}
-        >
-          <Input
-            addonBefore={<InstagramOutlined />}
-            placeholder="https://www.instagram.com/username"
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="websiteLink"
-          className="font-sans text-2xl"
-          initialValue={
-            user?.socialLinks?.find(({ platform }) => platform === "Website")
-              ?.link
-          }
-          rules={[
-            { type: "url", message: "O link não corresponde a um url válido" },
-          ]}
-        >
-          <Input
-            addonBefore={<GlobalOutlined />}
-            placeholder="https://www.google.com"
-          />
-        </Form.Item>
+          {(fields) => (
+            <div>
+              {fields.map((field) => (
+                <Form.Item
+                  {...field}
+                  {...(field.key === 0 && { label: "Links" })}
+                >
+                  <Input
+                    addonBefore={Object.values(mappedProfileIcons)[field.key](
+                      14
+                    )}
+                  />
+                </Form.Item>
+              ))}
+            </div>
+          )}
+        </Form.List>
 
         <Form.Item className="mt-12">
           <Button type="primary" htmlType="submit">

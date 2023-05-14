@@ -6,7 +6,10 @@ import {
   LinkedinOutlined,
   InstagramOutlined,
   GlobalOutlined,
+  YoutubeOutlined,
+  TwitterOutlined,
 } from "@ant-design/icons";
+import { IoLogoTiktok } from "react-icons/io5";
 
 import useUser from "@hooks/useUser";
 
@@ -48,27 +51,25 @@ export default function Profile() {
           </div>
 
           <ul className="flex gap-4 mt-6">
-            {user.socialLinks?.map(({ platform, link }) => (
-              <li key={platform}>
-                <a target="_blank" rel="noopener noreferrer" href={link}>
-                  {platform === "Website" && (
-                    <GlobalOutlined style={{ fontSize: 22 }} />
-                  )}
-                  {platform === "Instagram" && (
-                    <InstagramOutlined style={{ fontSize: 22 }} />
-                  )}
-                  {platform === "Facebook" && (
-                    <FacebookOutlined style={{ fontSize: 22 }} />
-                  )}
-                  {platform === "LinkedIn" && (
-                    <LinkedinOutlined style={{ fontSize: 22 }} />
-                  )}
-                </a>
-              </li>
-            ))}
+            {Object.entries(user?.socialLinks!).map(([key, link]) => {
+              const platform = key as keyof typeof mappedProfileIcons;
+
+              return (
+                link && (
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={link}
+                    key={platform}
+                  >
+                    {mappedProfileIcons[platform]()}
+                  </a>
+                )
+              );
+            })}
           </ul>
         </div>
-        <Avatar size={180} src={user?.avatar} />
+        <Avatar size={180} src={user?.avatarUrl} />
       </div>
       <div>
         <h3 className="mt-6 font-bold text-xl">Sobre</h3>
@@ -77,3 +78,13 @@ export default function Profile() {
     </div>
   );
 }
+
+export const mappedProfileIcons = {
+  website: (size = 22) => <GlobalOutlined style={{ fontSize: size }} />,
+  youtube: (size = 22) => <YoutubeOutlined style={{ fontSize: size }} />,
+  instagram: (size = 22) => <InstagramOutlined style={{ fontSize: size }} />,
+  facebook: (size = 22) => <FacebookOutlined style={{ fontSize: size }} />,
+  twitter: (size = 22) => <TwitterOutlined style={{ fontSize: size }} />,
+  linkedin: (size = 22) => <LinkedinOutlined style={{ fontSize: size }} />,
+  tiktok: (size = 22) => <IoLogoTiktok size={size} />,
+};

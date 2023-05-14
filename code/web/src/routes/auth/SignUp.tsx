@@ -25,7 +25,7 @@ export default function SignUp() {
         ...form,
       });
       auth.signIn({
-        token: response.data.token.token,
+        token: response.data.data.token,
       });
       navigate(0);
     } catch (error) {}
@@ -33,7 +33,7 @@ export default function SignUp() {
 
   const checkAlreadyUsed = debounce((field, value, setState) => {
     fetch
-      .post("auth/used", { [field]: value })
+      .post("users/check", { [field]: value })
       .then(() => {
         setState(null);
       })

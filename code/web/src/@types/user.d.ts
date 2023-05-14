@@ -15,9 +15,17 @@ declare global {
   interface User {
     username: string;
     name?: string;
-    avatar?: string;
+    avatarUrl?: string;
     profession?: string;
     biography?: string;
-    socialLinks?: SocialLink[];
+    socialLinks?: {
+      website?: string
+      youtube?: string
+      instagram?: string
+      facebook?: string
+      twitter?: string
+      linkedin?: string
+      tiktok?: string
+    };
   }
 }

@@ -1,43 +1,122 @@
-import React from "react";
-import { Button, Form, Input, Upload } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import { Button, Form, Input, InputNumber, Upload } from "antd";
+import { RcFile } from "antd/es/upload";
+import {
+  UploadOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 
-const { TextArea } = Input;
+import { toBase64 } from "@utils/converts";
 
 export default function CourseCreate() {
+  const [courseThumbnail, setCourseThumbnail] = useState<{
+    file: RcFile;
+    base64: string;
+  }>();
+
+  async function handleSubmit(form: any) {
+    console.log(form);
+  }
+
   return (
-    <div className="flex flex-col py-10">
-      <h1 className="font-sans font-bold text-2xl ml-16">Criar Curso</h1>
+    <div className="flex flex-col max-w-7xl mx-auto py-4 sm:py-10">
+      <h1 className="font-sans font-bold text-2xl sm:ml-16">Criar Curso</h1>
 
       <Form
         layout="vertical"
-        className="mx-32 mt-10 flex gap-16"
+        className="flex flex-col-reverse sm:mx-32 lg:flex-row lg:mt-10 lg:gap-16"
+        onFinish={handleSubmit}
       >
-        <div className="flex-1">
-          <Form.Item label="Dê um nome para o curso">
+        <div className="flex-[1.5]">
+          <Form.Item label="Dê um nome para o curso" name="name">
             <Input />
           </Form.Item>
 
-          <Form.Item label="Adicione uma pequena descrição sobre o curso">
-            <TextArea rows={3}></TextArea>
+          <Form.Item
+            label="Adicione uma pequena descrição sobre o curso"
+            name="description"
+          >
+            <Input.TextArea rows={3}></Input.TextArea>
           </Form.Item>
 
-          <Form.Item label="O que as pessoas vão aprender no curso?">
-            <TextArea rows={3}></TextArea>
+          <Form.Item label="Qual vai ser o preço do curso?" name="price">
+            <InputNumber defaultValue={10} min={0} max={100} />
           </Form.Item>
+
+          <Form.List name="willLearn" initialValue={[""]}>
+            {(fields, { add, remove }) => (
+              <div>
+                <label className="block pb-2">
+                  O que as pessoas vão aprender no curso?
+                </label>
+                {fields.map((field) => (
+                  <Form.Item
+                    {...field}
+                    rules={[
+                      {
+                        required: true,
+                        min: 8,
+                        max: 48,
+                        message:
+                          "Insira uma frase que contenha entre 8 e 48 caracteres",
+                      },
+                    ]}
+                  >
+                    <Input
+                      addonAfter={
+                        <DeleteOutlined
+                          className="text-red-600"
+                          onClick={() => remove(field.name)}
+                        />
+                      }
+                    />
+                  </Form.Item>
+                ))}
+                <div
+                  className="-mt-5 text-lg float-right p-2 cursor-pointer flex items-center gap-2"
+                  onClick={() => add()}
+                >
+                  <span className="text-sm">Adicionar</span> <PlusOutlined />
+                </div>
+              </div>
+            )}
+          </Form.List>
 
           <Form.Item>
-            <Button type="primary" className="mt-8">
+            <Button type="primary" htmlType="submit" className="mt-8">
               Criar e adicionar videos
             </Button>
           </Form.Item>
         </div>
 
-        <div className="flex-1">
-          <Form.Item label="Adicionar uma capa" className="">
-            <div className="bg-gradient-to-bl from-blue-600 to-cyan-500 w-64 h-80 rounded-xl"></div>
-            <Upload>
-              <Button className="mt-8" icon={<UploadOutlined />}>Click to Upload</Button>
+        <div className="flex-1 mt-6">
+          <Form.Item label="Adicionar uma capa">
+            <Upload
+              showUploadList={false}
+              beforeUpload={(file: RcFile) => {
+                toBase64(file as File).then((base64) => {
+                  setCourseThumbnail({ file, base64 });
+                });
+
+                return false;
+              }}
+            >
+              <div className="flex gap-4 flex-col sm:flex-row lg:flex-col">
+                <div className="bg-gradient-to-bl from-blue-600 to-cyan-500 w-64 h-80 rounded-xl overflow-hidden">
+                  <img
+                    className="w-full h-full object-cover"
+                    src={courseThumbnail?.base64}
+                    alt=""
+                  />
+                </div>
+                <Button
+                  className="self-start sm:self-end lg:self-start"
+                  icon={<UploadOutlined />}
+                >
+                  Click to Upload
+                </Button>
+              </div>
             </Upload>
           </Form.Item>
         </div>

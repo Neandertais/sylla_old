@@ -1,19 +1,12 @@
 import useSWR from "swr";
 
 export default function useUser(username?: string) {
-  const url = username ? `/users/${username}` : "/users";
+  const url = username ? `/users/${username}` : "/user";
 
   const { data, error, isLoading } = useSWR(url, {
     shouldRetryOnError: false,
     revalidateOnFocus: false,
   });
 
-  if (data) {
-    const { social_links, ...rest } = data?.data;
-    const user: User = { ...rest, socialLinks: social_links };
-
-    return { user, error, isLoading };
-  }
-
-  return { data , error, isLoading };
+  return { user: data?.data?.user as User , error, isLoading };
 }
