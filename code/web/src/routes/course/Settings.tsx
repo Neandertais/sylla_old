@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Form, Input, InputNumber, Upload } from "antd";
+import { Button, Form, Input, InputNumber, Modal, Upload } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { RcFile } from "antd/es/upload";
 import { UploadOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -18,6 +18,21 @@ export default function CourseSettings() {
     file?: RcFile;
     base64?: string;
   }>({ base64: course?.bannerUrl });
+
+  async function handleShowModal() {
+    Modal.confirm({
+      title: "Deseja realmente deletar o curso?",
+      content: "Ao confirmar não será possível restaurar o curso",
+      okText: "Sim",
+      okType: "danger",
+      cancelText: "Cancelar",
+      onOk: async () => {
+        await fetch.delete(`/courses/${course.id}`)
+
+        navigate('/u/courses')
+      },
+    });
+  }
 
   async function handleSubmit(form: any) {
     try {
@@ -131,10 +146,15 @@ export default function CourseSettings() {
               )}
             </Form.List>
 
-            <Form.Item>
-              <Button type="primary" htmlType="submit" className="mt-8">
-                Salvar
-              </Button>
+            <Form.Item className="mt-20">
+              <div className="flex justify-end">
+                <Button onClick={handleShowModal} className="mr-4" type="text" danger>
+                  Deletar
+                </Button>
+                <Button type="primary" htmlType="submit">
+                  Salvar
+                </Button>
+              </div>
             </Form.Item>
           </div>
 

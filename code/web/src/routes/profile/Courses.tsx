@@ -22,7 +22,7 @@ export default function Courses() {
   return (
     <div className="py-10 max-w-5xl mx-auto">
       <h2 className="font-bold text-2xl mb-10">Meus cursos</h2>
-      <div className="flex justify-center flex-wrap gap-12">
+      <div className="flex justify-start flex-wrap gap-12">
         {courses.map((course) => (
           <CourseDisplay key={course.id} course={course} showRate={false} showPrice={false} />
         ))}
