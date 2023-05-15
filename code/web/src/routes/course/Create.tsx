@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button, Form, Input, InputNumber, Upload } from "antd";
+import { useNavigate } from "react-router-dom";
 import { RcFile } from "antd/es/upload";
 import {
   UploadOutlined,
@@ -8,15 +9,31 @@ import {
 } from "@ant-design/icons";
 
 import { toBase64 } from "@utils/converts";
+import { fetch } from "@services/api";
 
 export default function CourseCreate() {
+  const navigate = useNavigate()
+
   const [courseThumbnail, setCourseThumbnail] = useState<{
     file: RcFile;
     base64: string;
   }>();
 
   async function handleSubmit(form: any) {
-    console.log(form);
+    try {
+      console.log(form)
+      const response = await fetch.post("/courses", form);
+      const courseId = response.data.data.course.id
+
+      if (courseThumbnail) {
+        const form = new FormData()
+        form.append('banner', courseThumbnail.file)
+
+        await fetch.patch(`/courses/${courseId}`, form)
+      }
+
+      navigate(`/course/${courseId}`)
+    } catch {}
   }
 
   return (
@@ -26,22 +43,52 @@ export default function CourseCreate() {
       <Form
         layout="vertical"
         className="flex flex-col-reverse sm:mx-32 lg:flex-row lg:mt-10 lg:gap-16"
+        requiredMark={false}
+        initialValues={{ price: 10 }}
         onFinish={handleSubmit}
       >
         <div className="flex-[1.5]">
-          <Form.Item label="Dê um nome para o curso" name="name">
+          <Form.Item
+            label="Dê um nome para o curso"
+            name="name"
+            rules={[
+              {
+                required: true,
+                type: "string",
+                min: 12,
+                message: "O nome deve ter no mínimo 12 caracteres",
+              },
+              {
+                type: "string",
+                max: 120,
+                message: "O nome deve ter no máximo 120 caracteres",
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
 
           <Form.Item
             label="Adicione uma pequena descrição sobre o curso"
             name="description"
+            rules={[
+              {
+                type: "string",
+                min: 20,
+                message: "A descrição deve ter no mínimo 20 caracteres",
+              },
+              {
+                type: "string",
+                max: 560,
+                message: "A descrição deve ter no máximo 569 caracteres",
+              },
+            ]}
           >
             <Input.TextArea rows={3}></Input.TextArea>
           </Form.Item>
 
           <Form.Item label="Qual vai ser o preço do curso?" name="price">
-            <InputNumber defaultValue={10} min={0} max={100} />
+            <InputNumber min={0} max={100} required />
           </Form.Item>
 
           <Form.List name="willLearn" initialValue={[""]}>

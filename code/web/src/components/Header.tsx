@@ -19,8 +19,8 @@ export default function Header() {
   }
 
   return (
-    <div>
-      <header className="shadow-md">
+    <div className="z-50 relative">
+      <header className="shadow-md bg-white">
         <div className="flex relative items-center justify-between px-5 py-3 max-w-7xl mx-auto z-10 sm:px-8">
           <Link to="/" className="hover:text-black">
             <h1 className="font-bold font-base text-xl">SYLLA</h1>
@@ -75,7 +75,7 @@ export default function Header() {
                     <div className="border border-t-0 w-full" />
                     <Link
                       className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
-                      to="/u/settings"
+                      to="/u/courses"
                     >
                       Meus Cursos
                     </Link>
