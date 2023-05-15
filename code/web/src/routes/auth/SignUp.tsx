@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Form, Input } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { debounce } from "lodash-es";
 
 import { useAuth } from "@contexts/Authentication";
@@ -18,6 +18,7 @@ interface ISignUpForm {
 export default function SignUp() {
   const auth = useAuth();
   const navigate = useNavigate();
+  const { search } = useLocation();
 
   async function handleSubmit(form: ISignUpForm) {
     try {
@@ -45,9 +46,7 @@ export default function SignUp() {
       });
   }, 1000);
 
-  const [usernameErrorStatus, setUsernameErrorStatus] = useState<string | null>(
-    null
-  );
+  const [usernameErrorStatus, setUsernameErrorStatus] = useState<string | null>(null);
   const [emailErrorStatus, setEmailErrorStatus] = useState<string | null>(null);
 
   return (
@@ -57,9 +56,7 @@ export default function SignUp() {
       </div>
       <div className="flex items-center justify-center">
         <div className="w-full max-w-md px-6">
-          <h1 className="font-sans font-bold text-2xl text-center mb-6">
-            Cadastrar
-          </h1>
+          <h1 className="font-sans font-bold text-2xl text-center mb-6">Cadastrar</h1>
           <Form layout="vertical" onFinish={handleSubmit} requiredMark={false}>
             <Form.Item
               label="Nome de usuário"
@@ -84,9 +81,7 @@ export default function SignUp() {
               ]}
             >
               <Input
-                onChange={({ target: { value } }) =>
-                  checkAlreadyUsed("username", value, setUsernameErrorStatus)
-                }
+                onChange={({ target: { value } }) => checkAlreadyUsed("username", value, setUsernameErrorStatus)}
                 className=""
               />
             </Form.Item>
@@ -107,11 +102,7 @@ export default function SignUp() {
                 },
               ]}
             >
-              <Input
-                onChange={({ target: { value } }) =>
-                  checkAlreadyUsed("email", value, setEmailErrorStatus)
-                }
-              />
+              <Input onChange={({ target: { value } }) => checkAlreadyUsed("email", value, setEmailErrorStatus)} />
             </Form.Item>
             <Form.Item
               label="Senha"
@@ -158,7 +149,7 @@ export default function SignUp() {
               </Button>
               <span className="text-center block mt-6">
                 Já tem conta?{" "}
-                <Link className="text-cyan-600" to="/auth/signin">
+                <Link className="text-cyan-600" to={`/auth/signin${search}`}>
                   Entre
                 </Link>
               </span>

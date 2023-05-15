@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, Badge, Input } from "antd";
+import { TbMoneybag } from "react-icons/tb";
 
 import { useAuth } from "@contexts/Authentication";
 
@@ -34,10 +35,7 @@ export default function Header() {
               <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-full px-4">
                 <Input.Search
                   addonBefore={
-                    <div
-                      onClick={handleCloseSearchMenu}
-                      className="flex items-center"
-                    >
+                    <div onClick={handleCloseSearchMenu} className="flex items-center">
                       <BiArrowBack />
                     </div>
                   }
@@ -47,12 +45,7 @@ export default function Header() {
             </details>
             {user ? (
               <>
-                <Badge
-                  count={5}
-                  className="flex items-center"
-                  size="small"
-                  offset={[0, 4]}
-                >
+                <Badge count={5} className="flex items-center" size="small" offset={[0, 4]}>
                   <AiOutlineBell size={22} />
                 </Badge>
                 <details className="group">
@@ -60,23 +53,25 @@ export default function Header() {
                     <Avatar className="cursor-pointer" src={user?.avatarUrl} />
                   </summary>
                   <div className="flex flex-col gap-2 py-3 absolute bg-white shadow-md border w-44 right-4 top-16 rounded-md">
+                    <p className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 flex items-center">
+                      <TbMoneybag className="mr-2" color="#f59e0b"/>
+                      {new Intl.NumberFormat(undefined, {
+                        style: "currency",
+                        currency: "USD",
+                      }).format(user.cash)}
+                      {" woqs"}
+                    </p>
                     <Link
                       className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
                       to={`/u/${user.username}`}
                     >
                       Visualizar Perfil
                     </Link>
-                    <Link
-                      className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
-                      to="/u/settings"
-                    >
+                    <Link className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit" to="/u/settings">
                       Editar Perfil
                     </Link>
                     <div className="border border-t-0 w-full" />
-                    <Link
-                      className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit"
-                      to="/u/courses"
-                    >
+                    <Link className="mx-2 px-2 py-1 rounded-md hover:bg-gray-100 hover:text-inherit" to="/u/courses">
                       Meus Cursos
                     </Link>
                     <Link
@@ -100,16 +95,10 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link
-                  className="font-bold text-gray-800 hover:text-gray-400 hidden sm:block"
-                  to="/auth/signup"
-                >
+                <Link className="font-bold text-gray-800 hover:text-gray-400 hidden sm:block" to="/auth/signup">
                   Cadastrar
                 </Link>
-                <Link
-                  className="font-bold text-gray-800 hover:text-gray-400"
-                  to="/auth/signin"
-                >
+                <Link className="font-bold text-gray-800 hover:text-gray-400" to="/auth/signin">
                   Entrar
                 </Link>
               </>

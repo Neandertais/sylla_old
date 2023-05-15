@@ -1,30 +1,45 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Button, Modal, Rate } from "antd";
 import { BsCheckLg, BsPencil } from "react-icons/bs";
 
 import useCourse from "@hooks/useCourse";
 import { useAuth } from "@contexts/Authentication";
+import { fetch } from "@services/api";
 
 export default function Course() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { id } = useParams();
   const { user } = useAuth();
   const { course, isLoading } = useCourse(id!);
 
   const isOwner = user?.username === course?.owner.username;
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   async function handleShowModal() {
-    setIsModalOpen(true);
-  }
+    if (!user) {
+      navigate(`/auth/signin?redirect=${pathname}`);
+    }
 
-  async function handleOkModal() {
-    setIsModalOpen(false);
-  }
+    Modal.confirm({
+      title: "Deseja realmente comprar o curso?",
+      content: "Ao confirmar não será possível devolver o curso",
+      okText: "Sim",
+      cancelText: "Cancelar",
+      type: "confirm",
+      onOk: async () => {
+        try {
+          await fetch.post(`/courses/${course.id}/buy`);
 
-  async function handleCancelModal() {
-    setIsModalOpen(false);
+          navigate("/u/courses");
+        } catch {
+          Modal.error({
+            title: "Desculpe houve um erro",
+            content: "Verifique se possui dinheiro suficiente, e tente novamente mais tarde",
+          });
+        }
+      },
+    });
   }
 
   if (isLoading) {
@@ -71,17 +86,11 @@ export default function Course() {
               </span>
               woqs
             </p>
-            <Button type="primary" onClick={handleShowModal}>
-              Comprar
-            </Button>
-            <Modal
-              title="Deseja realmente comprar o curso?"
-              open={isModalOpen}
-              onOk={handleOkModal}
-              onCancel={handleCancelModal}
-            >
-              <p>Ao confirmar não será possível devolver o curso </p>
-            </Modal>
+            {!isOwner && (
+              <Button type="primary" onClick={handleShowModal}>
+                Comprar
+              </Button>
+            )}
           </div>
         </div>
         <div className="bg-gradient-to-bl from-blue-600 to-cyan-500 w-64 h-80 rounded-xl overflow-hidden">

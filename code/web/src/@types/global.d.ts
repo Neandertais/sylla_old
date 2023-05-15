@@ -17,6 +17,7 @@ declare global {
   interface User {
     username: string;
     name?: string;
+    cash: number;
     avatarUrl?: string;
     profession?: string;
     biography?: string;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, Form, Input } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "@contexts/Authentication";
 import { fetch } from "@services/api";
@@ -15,6 +15,7 @@ interface ISignInForm {
 export default function SignIn() {
   const auth = useAuth();
   const navigate = useNavigate();
+  const { search } = useLocation();
 
   const [errors, setErrors] = useState<string>();
 
@@ -36,23 +37,12 @@ export default function SignIn() {
     <div className="grid min-h-screen lg:grid-cols-[1fr,1.2fr]">
       <div className="flex items-center justify-center">
         <div className="w-full max-w-md px-6">
-          <h1 className="font-sans font-bold text-2xl text-center mb-6">
-            Login
-          </h1>
+          <h1 className="font-sans font-bold text-2xl text-center mb-6">Login</h1>
           <Form layout="vertical" onFinish={handleSubmit}>
-            <Form.Item
-              label="Nome de usuário ou email"
-              name="usernameOrEmail"
-              validateStatus={errors && "error"}
-            >
+            <Form.Item label="Nome de usuário ou email" name="usernameOrEmail" validateStatus={errors && "error"}>
               <Input />
             </Form.Item>
-            <Form.Item
-              label="Senha"
-              name="password"
-              validateStatus={errors && "error"}
-              help={errors}
-            >
+            <Form.Item label="Senha" name="password" validateStatus={errors && "error"} help={errors}>
               <Input.Password />
             </Form.Item>
             <Form.Item>
@@ -61,7 +51,7 @@ export default function SignIn() {
               </Button>
               <span className="text-center block mt-6">
                 Não tem conta?{" "}
-                <Link className="text-cyan-600" to="/auth/signup">
+                <Link className="text-cyan-600" to={`/auth/signup${search}`}>
                   Cadastra-se
                 </Link>
               </span>
